@@ -2,16 +2,20 @@
 title: "Quantifying isotope incorporation"
 author: "Nick Youngblut"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    toc: true
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Quantifying isotope incorporation}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
+***
+
 # Introduction
 
-There are to prevaling methods for using HTS-SIP data to estimate the amount of isotope that each OTU incorporated: 
+There are two prevaling methods for using HTS-SIP data to estimate the amount of isotope that each OTU incorporated: 
 
 * q-SIP
 * delta_BD (a complementary analysis to HR-SIP)
@@ -117,9 +121,9 @@ OK. Time to plot!
 
 ```{r, fig.height=3, fig.width=7}
 # plotting BD shift (Z)
-ggplot(df_j, aes(OTU, Z)) +
-  geom_point(size=0.5, color='blue') +
-  geom_point(aes(y=delta_BD), color='red', size=0.5) +
+ggplot(df_j, aes(OTU)) +
+  geom_point(aes(y=Z), color='blue') +
+  geom_point(aes(y=delta_BD), color='red') +
   geom_hline(yintercept=0, linetype='dashed', alpha=0.5) +
   labs(x='OTU', y='BD shift (Z)') +
   theme_bw() +
@@ -127,6 +131,8 @@ ggplot(df_j, aes(OTU, Z)) +
     axis.text.x = element_blank()
   )
 ```
+
+In the figure, red points are delta_BD and blue points are q-SIP. It's easy to see that delta_BD is a lot more variable than q-SIP. This is likely due to a high influence of compositional data artifacts on delta_BD versus q-SIP.
 
 Let's make a boxplot to show the difference in estimation variance between the two methods.
 
@@ -136,7 +142,8 @@ Let's make a boxplot to show the difference in estimation variance between the t
 ## formatting the table
 df_j_g = df_j %>%
   dplyr::select(OTU, Z, delta_BD) %>%
-  tidyr::gather(Method, BD_shift, Z, delta_BD)
+  tidyr::gather(Method, BD_shift, Z, delta_BD) %>%
+  mutate(Method = ifelse(Method == 'Z', 'q-SIP', 'delta-BD'))
 
 ## plotting 
 ggplot(df_j_g, aes(Method, BD_shift)) +
@@ -146,6 +153,7 @@ ggplot(df_j_g, aes(Method, BD_shift)) +
   theme_bw() 
 ```
 
+The boxplot helps to summarize how much more variance delta_BD produces versus q-SIP.
 
 # Session info
 

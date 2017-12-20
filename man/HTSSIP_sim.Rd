@@ -5,7 +5,7 @@
 \title{Simulate a HTS-SIP dataset}
 \usage{
 HTSSIP_sim(locs, params, responseModel = "gaussian", countModel = "poisson",
-  meta = NULL, parallel = FALSE, ...)
+  meta = NULL, sim_tree = FALSE, parallel = FALSE, ...)
 }
 \arguments{
 \item{locs}{Buoyant densities of each gradient fraction}
@@ -20,6 +20,8 @@ See that function's documentation for more details.}
 \item{meta}{Data.frame object of metadata to add to \code{sample_data} table.
 The data.frame object must have a 'Gradient' column, which is used for joining
 with \code{dplyr::left_join()}.}
+
+\item{sim_tree}{Simulate a tree?}
 
 \item{parallel}{Parallel processing. See \code{.parallel} option in
 \code{dplyr::mdply()} for more details.}
@@ -53,9 +55,10 @@ param_l = list(
   '12C-Con_rep1' = params1,
   '13C-Cel_rep1' = params2
 )
+\dontrun{
 # simulating phyloseq object
 physeq = HTSSIP_sim(locs, param_l)
 physeq
-
 }
 
+}

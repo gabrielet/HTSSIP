@@ -27,9 +27,14 @@ List of dist objects
 For each phyloseq object in a list, calculates beta-diversity
 between all samples using the phyloseq::distance function.
 }
+\details{
+Note: for calculating Unifrac values, phyloseq will select
+a root at random if the input phylogeny is not rooted.
+}
 \examples{
 data(physeq_S2D2_l)
+\dontrun{
 physeq_S2D2_l_d = physeq_list_betaDiv(physeq_S2D2_l)
-
 }
 
+}

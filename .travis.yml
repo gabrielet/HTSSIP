@@ -4,6 +4,9 @@ language: R
 sudo: false
 cache: packages
 
+#r_build_args: --no-build-vignettes
+#r_check_args: --no-build-vignettes
+
 bioc_packages:
   - DESeq2
   - phyloseq
@@ -12,3 +15,4 @@ warnings_are_errors: false
 
 r_github_packages:
   - nick-youngblut/HTSSIP
+

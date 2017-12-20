@@ -20,7 +20,7 @@ SIP_betaDiv_ord(physeq_l, method = "unifrac", weighted = TRUE,
 
 \item{parallel}{Calculate in parallel}
 
-\item{plot}{Return a plot (instead of )}
+\item{plot}{Return a plot (instead of a data.frame of ordination data)}
 }
 \value{
 If plot==FALSE, a data.frame object of beta-diversity values.
@@ -32,8 +32,9 @@ between all samples using the phyloseq::distance function.
 }
 \examples{
 data(physeq_S2D2_l)
+\dontrun{
 physeq_S2D2_l_df = SIP_betaDiv_ord(physeq_S2D2_l)
 head(physeq_S2D2_l_df, n=3)
-
 }
 
+}

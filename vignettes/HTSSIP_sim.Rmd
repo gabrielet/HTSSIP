@@ -2,18 +2,22 @@
 title: "HTS-SIP data simulation"
 author: "Nick Youngblut"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    toc: true
 vignette: >
   %\VignetteIndexEntry{HTS-SIP data simulation}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
+***
+
 # Introduction
 
 HTSSIP has some functionality for simulating basic HTS-SIP datasets. With that said, I recommend using a more sophisticated simulation toolset such as SIPSim **[LINK]** for applications other than simple testing of HTS-SIP data analysis functions.
 
-HTSSIP relies *heavily* on the great R package [coenocliner](https://cran.r-project.org/web/packages/coenocliner/index.html). See [this tutorial](http://www.fromthebottomoftheheap.net/code/r-packages/coenocliner/) for a short and simple introduction. 
+HTSSIP relies *heavily* on the great R package [coenocliner](https://CRAN.R-project.org/package=coenocliner). See [this tutorial](http://www.fromthebottomoftheheap.net/code/r-packages/coenocliner/) for a short and simple introduction. 
 
 # Simulating a HTS-SIP dataset
 
@@ -168,7 +172,7 @@ physeq_rep3_qPCR$summary %>% head
 Let's plot the data.
 
 ```{r, fig.height=3, fig.width=7}
-x_lab = 'Buoyant density (g ml^-1)'
+x_lab = bquote('Buoyant density (g '* ml^-1*')')
 y_lab = '16S rRNA gene copies'
 
 ggplot(physeq_rep3_qPCR$summary, aes(Buoyant_density, qPCR_tech_rep_mean,
@@ -181,6 +185,7 @@ ggplot(physeq_rep3_qPCR$summary, aes(Buoyant_density, qPCR_tech_rep_mean,
   theme_bw()
 ```
 
+With this simulation, we made the separation between labeled and unlabeled DNA pretty easy to distinguish. 
 
 OK. Just to show the flexiblity of the qPCR value simulation function, let's try using some other functions as input. 
 

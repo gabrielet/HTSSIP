@@ -1,5 +1,15 @@
-# conversion to numeric
-as.Num = function(x) x %>% as.character %>% as.numeric
+#' conversion to numeric
+#'
+#' Conducts conversion: as.character --> as.numeric
+#'
+#' @param x  single value
+#' @return numeric
+#'
+#' @export
+#'
+as.Num = function(x){
+  as.numeric(as.character(x))
+}
 
 
 #' phyloseq data object conversion to data.frame
@@ -58,12 +68,14 @@ phyloseq2df = function(physeq, table_func){
 #'                         sample_col_keep=c('Buoyant_density', 'Substrate', 'Day'))
 #' head(df_OTU)
 #'
+#' \dontrun{
 #' # Including some columns from sample metadata & taxonomy
 #' df_OTU = phyloseq2table(physeq_S2D1,
 #'                         include_sample_data=TRUE,
 #'                         sample_col_keep=c('Buoyant_density', 'Substrate', 'Day'),
 #'                         include_tax_table=TRUE)
 #' head(df_OTU)
+#' }
 #'
 phyloseq2table = function(physeq,
                           include_sample_data=FALSE,
@@ -75,7 +87,8 @@ phyloseq2table = function(physeq,
   df_OTU = phyloseq::otu_table(physeq)
   df_OTU = suppressWarnings(as.data.frame(as.matrix(df_OTU)))
   df_OTU$OTU = rownames(df_OTU)
-  df_OTU = tidyr::gather(df_OTU, SAMPLE_JOIN, Count, -OTU)
+  sel_cols = colnames(df_OTU)[colnames(df_OTU) != 'OTU']
+  df_OTU = tidyr::gather_(df_OTU, "SAMPLE_JOIN", "Count", sel_cols)
 
   # sample metdata
   if(include_sample_data==TRUE){
@@ -83,8 +96,13 @@ phyloseq2table = function(physeq,
     df_meta$SAMPLE_JOIN = rownames(df_meta)
 
     if(! is.null(control_expr)){
+      # setting control
       df_meta = df_meta %>%
         dplyr::mutate_(IS_CONTROL = control_expr)
+      # check
+      if(all(df_meta$IS_CONTROL == FALSE)){
+        stop('control_expr is not valid; no samples selected as controls')
+      }
     }
 
     ## trimming

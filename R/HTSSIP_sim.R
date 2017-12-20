@@ -40,6 +40,7 @@ gradient_sim = function(locs, params,
   colnames(df_OTU) = gsub('^', 'OTU.', 1:nrow(params))
   #print(df_OTU)
   df_OTU$Buoyant_density = locs   #as.character(round(locs, digits=4))
+  df_OTU$Fraction = df_OTU$Buoyant_density %>% as.factor %>% as.numeric
   return(df_OTU)
 }
 
@@ -54,6 +55,7 @@ gradient_sim = function(locs, params,
 #' @param meta  Data.frame object of metadata to add to \code{sample_data} table.
 #' The data.frame object must have a 'Gradient' column, which is used for joining
 #' with \code{dplyr::left_join()}.
+#' @param sim_tree  Simulate a tree?
 #' @param parallel  Parallel processing. See \code{.parallel} option in
 #' \code{dplyr::mdply()} for more details.
 #'
@@ -80,14 +82,17 @@ gradient_sim = function(locs, params,
 #'   '12C-Con_rep1' = params1,
 #'   '13C-Cel_rep1' = params2
 #' )
+#' \dontrun{
 #' # simulating phyloseq object
 #' physeq = HTSSIP_sim(locs, param_l)
 #' physeq
+#' }
 #'
 HTSSIP_sim = function(locs, params,
                    responseModel='gaussian',
                    countModel='poisson',
                    meta=NULL,
+                   sim_tree=FALSE,
                    parallel=FALSE,
                    ...){
   # making & combining OTU tables (1 per gradient)
@@ -100,13 +105,14 @@ HTSSIP_sim = function(locs, params,
                        ...)
 
   # vary the BDs a bit
-  x = rnorm(nrow(df_OTU), mean=0, sd=0.002)
+  x = stats::rnorm(nrow(df_OTU), mean=0, sd=0.002)
   df_OTU$Buoyant_density = as.Num(df_OTU$Buoyant_density) + x
-  df_OTU$Buoyant_density = round(df_OTU$Buoyant_density, digits=7)
+  df_OTU$Buoyant_density = round(df_OTU$Buoyant_density, digits=6)
 
   # metadata
-  X = c('Gradient', 'Buoyant_density')
+  X = c('Gradient', 'Buoyant_density', 'Fraction')
   df_meta = df_OTU[,X]
+  df_OTU$Fraction = NULL
 
   # adding to metadata
   if(!is.null(meta)){
@@ -115,7 +121,7 @@ HTSSIP_sim = function(locs, params,
   }
 
   # formatting OTU table
-  rownames(df_OTU) = apply(df_meta[,X], 1, paste, collapse="_")
+  rownames(df_OTU) = gsub(' ', '', apply(df_meta[,X], 1, paste, collapse="_"))
   df_OTU$Gradient = NULL
   df_OTU$Buoyant_density = NULL
   df_OTU = t(df_OTU)
@@ -129,5 +135,15 @@ HTSSIP_sim = function(locs, params,
     phyloseq::sample_data(df_meta)
   )
 
+  # simulating a tree
+  if(sim_tree==TRUE){
+    tree = ape::rtree(nrow(df_OTU))
+    tree$tip.label = rownames(df_OTU)
+    physeq = phyloseq::merge_phyloseq(physeq, tree)
+  } else {
+    tree = NULL
+  }
+
   return(physeq)
 }
+

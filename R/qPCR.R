@@ -10,11 +10,11 @@
   if(IS_CONTROL==TRUE){
     M = control_mean_fun(Buoyant_density, ...)
     S = control_sd_fun(Buoyant_density, ...)
-    X = rnorm(n=n_tech_rep, mean=M, sd=S)
+    X = stats::rnorm(n=n_tech_rep, mean=M, sd=S)
   } else {
     M = treat_mean_fun(Buoyant_density, ...)
     S = treat_sd_fun(Buoyant_density, ...)
-    X = rnorm(n=n_tech_rep, mean=M, sd=S)
+    X = stats::rnorm(n=n_tech_rep, mean=M, sd=S)
   }
   X = ifelse(X < 0, 0, X)
   return(X)
@@ -96,8 +96,8 @@ qPCR_sim = function(physeq,
     stop('Buoyant_density column not found in phyloseq object sample_data')
   }
   m_f = m %>%
-    dplyr::mutate(Buoyant_density = as.Num(Buoyant_density)) %>%
-    dplyr::select(Buoyant_density, IS_CONTROL)
+    dplyr::mutate_(Buoyant_density = "as.numeric(as.character(Buoyant_density))") %>%
+    dplyr::select_("Buoyant_density", "IS_CONTROL")
 
   df_qPCR = plyr::mdply(m_f, .qPCR_sim,
                         control_mean_fun=control_mean_fun,
@@ -110,13 +110,13 @@ qPCR_sim = function(physeq,
   df_qPCR$Sample = phyloseq::sample_data(physeq) %>% rownames
 
   # gather & summarize
+  sel_cols = colnames(df_qPCR)
+  sel_cols = sel_cols[grepl("^qPCR_tech_rep", sel_cols)]
   df_qPCR_s = df_qPCR %>%
-    tidyr::gather(qPCR_tech_rep_id,
-                  qPCR_tech_rep_value,
-                  dplyr::starts_with('qPCR_tech_rep')) %>%
-    dplyr::group_by(IS_CONTROL, Sample, Buoyant_density) %>%
-    dplyr::summarize(qPCR_tech_rep_mean = mean(qPCR_tech_rep_value),
-                     qPCR_tech_rep_sd = sd(qPCR_tech_rep_value)) %>%
+    tidyr::gather_("qPCR_tech_rep_id", "qPCR_tech_rep_value", sel_cols) %>%
+    dplyr::group_by_("IS_CONTROL", "Sample", "Buoyant_density") %>%
+    dplyr::summarize_(qPCR_tech_rep_mean = "mean(qPCR_tech_rep_value)",
+                      qPCR_tech_rep_sd = "stats::sd(qPCR_tech_rep_value)") %>%
     dplyr::ungroup() %>%
     as.data.frame
 

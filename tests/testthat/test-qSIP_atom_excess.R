@@ -1,4 +1,8 @@
+# test_file('~/dev/HTSSIP/tests/testthat/test-qSIP_atom_excess.R')
+
 test_that('qSIP_BD_shift working', {
+  skip_on_cran()
+
   data(physeq_rep3)
   data(physeq_rep3_qPCR)
   physeq_rep3_t = OTU_qPCR_trans(physeq_rep3, physeq_rep3_qPCR)
@@ -42,6 +46,8 @@ test_that('bootstrap iteration is working', {
 })
 
 test_that('bootstrap in parallel working', {
+  skip_on_cran()
+
   data(physeq_rep3)
   data(physeq_rep3_qPCR)
   physeq_rep3_t = OTU_qPCR_trans(physeq_rep3, physeq_rep3_qPCR)
@@ -53,7 +59,7 @@ test_that('bootstrap in parallel working', {
 
   doParallel::registerDoParallel(2)
   # qSIP with bootstrapping
-  df_atomX_boot = qSIP_bootstrap(atomX, parallel=TRUE, n_boot=100)
+  df_atomX_boot = qSIP_bootstrap(atomX, parallel=TRUE, n_boot=20)
   # output formatted correctly
   expect_is(df_atomX_boot, 'data.frame')
   # gte zero CI ranges

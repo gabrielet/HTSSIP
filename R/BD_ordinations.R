@@ -3,6 +3,9 @@
 #' For each phyloseq object in a list, calculates beta-diversity
 #' between all samples using the phyloseq::distance function.
 #'
+#' Note: for calculating Unifrac values, phyloseq will select
+#' a root at random if the input phylogeny is not rooted.
+#'
 #' @param physeq_l  A list of phyloseq objects
 #' @param method  See phyloseq::distance
 #' @param weighted  Weighted Unifrac (if calculating Unifrac)
@@ -15,7 +18,9 @@
 #'
 #' @examples
 #' data(physeq_S2D2_l)
+#' \dontrun{
 #' physeq_S2D2_l_d = physeq_list_betaDiv(physeq_S2D2_l)
+#' }
 #'
 physeq_list_betaDiv = function(physeq_l, method='unifrac', weighted=TRUE,
                                 fast=TRUE, normalized=TRUE, parallel=FALSE){
@@ -45,17 +50,19 @@ physeq_list_betaDiv = function(physeq_l, method='unifrac', weighted=TRUE,
 #'
 #' @examples
 #' data(physeq_S2D2_l)
+#' \dontrun{
 #' # make a list of beta diversity distance matrix objects
 #' physeq_S2D2_l_d = physeq_list_betaDiv(physeq_S2D2_l)
 #' # make a list of ordinations
 #' physeq_S2D2_l_d_ord = physeq_list_ord(physeq_S2D2_l, physeq_S2D2_l_d)
+#' }
 #'
 physeq_list_ord = function(physeq_l, physeq_l_d, ord_method='NMDS'){
   ord_l = list()
   for (X in names(physeq_l_d)){
-   ord_l[[X]] = ordinate(physeq_l[[X]],
-                          method = ord_method,
-                          distance = physeq_l_d[[X]])
+   ord_l[[X]] = phyloseq::ordinate(physeq_l[[X]],
+                                   method = ord_method,
+                                   distance = physeq_l_d[[X]])
   }
   return(ord_l)
 }
@@ -75,12 +82,14 @@ physeq_list_ord = function(physeq_l, physeq_l_d, ord_method='NMDS'){
 #'
 #' @examples
 #' data(physeq_S2D2_l)
+#' \dontrun{
 #' # make a list of beta diversity distance matrix objects
 #' physeq_S2D2_l_d = physeq_list_betaDiv(physeq_S2D2_l)
 #' # make a list of ordinations
 #' physeq_S2D2_l_d_ord = physeq_list_ord(physeq_S2D2_l, physeq_S2D2_l_d)
 #' # convert ordination information to data.frame objects
 #' physeq_S2D2_l_d_ord_df = phyloseq_list_ord_dfs(physeq_S2D2_l, physeq_S2D2_l_d_ord)
+#' }
 #'
 phyloseq_list_ord_dfs = function(physeq_l, physeq_l_ords, parallel=FALSE){
   n = names(physeq_l) %>% as.array
@@ -114,6 +123,7 @@ phyloseq_list_ord_dfs = function(physeq_l, physeq_l_ords, parallel=FALSE){
 #'
 #' @examples
 #' data(physeq_S2D2_l)
+#' \dontrun{
 #' # make a list of beta diversity distance matrix objects
 #' physeq_S2D2_l_d = physeq_list_betaDiv(physeq_S2D2_l)
 #' # make a list of ordinations
@@ -122,6 +132,7 @@ phyloseq_list_ord_dfs = function(physeq_l, physeq_l_ords, parallel=FALSE){
 #' physeq_S2D2_l_d_ord_df = phyloseq_list_ord_dfs(physeq_S2D2_l, physeq_S2D2_l_d_ord)
 #' # make ordination plots with ggplot2
 #' phyloseq_ord_plot(physeq_S2D2_l_d_ord_df)
+#' }
 #'
 phyloseq_ord_plot = function(physeq_ord_df, title=NULL,
                              point_size='Buoyant_density',
@@ -130,11 +141,11 @@ phyloseq_ord_plot = function(physeq_ord_df, title=NULL,
                              point_shape=NULL){
 
   if(! is.null(physeq_ord_df$NMDS1)){
-    AES = aes(x=NMDS1, y=NMDS2)
+    AES = aes_string(x='NMDS1', y='NMDS2')
   } else if(! is.null(physeq_ord_df$Axis.1)){
-    AES = aes(x=Axis.1, y=Axis.2)
+    AES = aes_string(x='Axis.1', y='Axis.2')
   } else if(! is.null(physeq_ord_df$CA1)){
-    AES = aes(x=CA1, y=CA2)
+    AES = aes_string(x='CA1', y='CA2')
   } else {
     stop('Do not recognize ordination axes')
   }
@@ -173,7 +184,7 @@ phyloseq_ord_plot = function(physeq_ord_df, title=NULL,
 #' @inheritParams physeq_list_betaDiv
 #' @inheritParams physeq_list_ord
 #' @inheritParams phyloseq_ord_plot
-#' @param plot  Return a plot (instead of )
+#' @param plot  Return a plot (instead of a data.frame of ordination data)
 #' @return If plot==FALSE, a data.frame object of beta-diversity values.
 #' If plot==TRUE, a glob object for plotting.
 #'
@@ -181,8 +192,10 @@ phyloseq_ord_plot = function(physeq_ord_df, title=NULL,
 #'
 #' @examples
 #' data(physeq_S2D2_l)
+#' \dontrun{
 #' physeq_S2D2_l_df = SIP_betaDiv_ord(physeq_S2D2_l)
 #' head(physeq_S2D2_l_df, n=3)
+#' }
 #'
 SIP_betaDiv_ord = function(physeq_l, method='unifrac', weighted=TRUE,
                           fast=TRUE, normalized=TRUE, parallel=FALSE,
