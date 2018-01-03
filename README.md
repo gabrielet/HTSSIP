@@ -27,7 +27,7 @@ A good place to start is the **HTSSIP introduction** vignette.
 
 The manuscript describing HTSSIP is:
 
-> Youngblut, Nicholas D., Samuel E. Barnett, and Daniel H. Buckley. 2017. “HTSSIP: An R Package for Analysis of High Throughput Sequencing Data from Nucleic Acid Stable Isotope Probing (SIP) Experiments.” bioRxiv. doi:10.1101/166009.
+> Youngblut ND, Barnett SE, Buckley DH (2018) HTSSIP: An R package for analysis of high throughput sequencing data from nucleic acid stable isotope probing (SIP) experiments. PLoS ONE 13(1): e0189616. https://doi.org/10.1371/journal.pone.0189616
 
 
 ## References 
