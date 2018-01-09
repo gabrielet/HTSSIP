@@ -1,3 +1,7 @@
+# HTSSIP 1.3.1
+
+* added citation information following publication in PLoS ONE
+
 # HTSSIP 1.3.0
 
 * added heavy_SIP() function for conducting historically used SIP analysis methods
