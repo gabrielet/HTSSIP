@@ -15,10 +15,10 @@ Description: Functions for analyzing high throughput sequencing
 License: GPL-2 | file LICENSE
 LazyData: TRUE
 Depends:
-    R (>= 3.1.2)
+    R (>= 3.4.0)
 Imports:
     igraph(>= 1.0.1),
-    ape(>= 4.1),
+    ape(>= 5.0),
     magrittr (>= 1.5),
     stringr (>= 1.0.0),
     plyr (>= 1.8.4),
@@ -26,8 +26,8 @@ Imports:
     tidyr (>= 0.5.1),
     ggplot2 (>= 2.1.0),
     vegan (>= 2.4.3),
-    DESeq2 (>= 1.10.1),
-    phyloseq (>= 1.19.1),
+    DESeq2 (>= 1.16.1),
+    phyloseq (>= 1.22.3),
     coenocliner (>= 0.2.2),
     lazyeval(>= 0.2.0)
 RoxygenNote: 6.0.1
