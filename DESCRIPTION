@@ -3,8 +3,8 @@ Type: Package
 Title: High Throughput Sequencing of Stable Isotope Probing Data Analysis
 Version: 1.3.2
 Authors@R: c(
-    person("Nicholas", "Youngblut", email="nyoungb2@gmail.com", role=c("aut", "cre")),
-    person("Samuel", "Barnett", email="seb369@cornell.edu", role=c("ctb"))
+    person("Nicholas", "Youngblut", email="nyoungb2@gmail.com", role=c("aut")),
+    person("Samuel", "Barnett", email="seb369@cornell.edu", role=c("cre", "ctb"))
     )
 Maintainer: Samuel Barnett <seb369@cornell.edu>
 Description: Functions for analyzing high throughput sequencing 
