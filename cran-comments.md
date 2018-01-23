@@ -7,7 +7,7 @@
 
 ### There were no ERRORS
 
-### There was no WARNINGS
+### There were no WARNINGS
 
 ### There was one NOTE
 
