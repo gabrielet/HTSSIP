@@ -1,3 +1,7 @@
+# HTSSIP 1.3.2
+
+* transferred maintainership from NY to SB
+
 # HTSSIP 1.3.1
 
 * added citation information following publication in PLoS ONE
