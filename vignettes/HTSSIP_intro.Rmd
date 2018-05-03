@@ -23,6 +23,7 @@ I recommend starting with this introductory vignette, then checking out the othe
 * **Dataset simulation**
     * [HTS-SIP dataset simulation](HTSSIP_sim.html)
 * **Detecting incorporators**
+    * [heavy-SIP](heavy_SIP.html)
     * [HR-SIP & MW-HR-SIP](MW_HR_SIP.html)
     * [q-SIP](qSIP.html)
 * **Quantifying the amount of isotope incorporated**
@@ -70,12 +71,12 @@ For more information on SIP and HTS-SIP, check out these references:
 * **DNA SIP**
     * Neufeld, Josh D., Jyotsna Vohra, Marc G. Dumont, Tillmann Lueders, Mike Manefield, Michael W. Friedrich, and J. Colin Murrell. 2007. “DNA Stable-Isotope Probing.” Nature Protocols 2 (4): 860–66.
     * Buckley, Daniel H., Varisa Huangyutitham, Shi-Fang Hsu, and Tyrrell A. Nelson. 2007. “Stable Isotope Probing with 15N Achieved by Disentangling the Effects of Genome G+C Content and Isotope Enrichment on DNA Density.” Applied and Environmental Microbiology 73 (10): 3189–95.
-    * Youngblut, Nicholas D., and Daniel H. Buckley. 2014. “Intra-Genomic Variation in G + C Content and Its Implications for DNA Stable Isotope Probing.” Environmental Microbiology Reports 6 (6): 767–75.
+    * Youngblut, Nicholas D. and Daniel H. Buckley. 2014. “Intra-Genomic Variation in G + C Content and Its Implications for DNA Stable Isotope Probing.” Environmental Microbiology Reports 6 (6): 767–75.
 * **HR-SIP**
     * Pepe-Ranney, Charles, Chantal Koechli, Ruth Potrafka, Cheryl Andam, Erin Eggleston, Ferran Garcia-Pichel, and Daniel H. Buckley. 2015. “Non-Cyanobacterial Diazotrophs Mediate Dinitrogen Fixation in Biological Soil Crusts during Early Crust Formation.” The ISME Journal.
     * Pepe-Ranney, Charles, Ashley N. Campbell, Chantal N. Koechli, Sean Berthrong, and Daniel H. Buckley. 2016. “Unearthing the Ecology of Soil Microorganisms Using a High Resolution DNA-SIP Approach to Explore Cellulose and Xylose Metabolism in Soil.” Terrestrial Microbiology, 703.
 * **MW-HR-SIP**
-    * Youngblut, Nicholas D., and Daniel H. Buckley. "Evaluating the Accuracy of DNA Stable Isotope Probing". in prep
+    * Youngblut, Nicholas D., Samuel E. Barnett, and Daniel H. Buckley. 2018. "SIPSim: A Modeling Toolkit to Predict Accuracy and Aid Design of DNA-SIP Experiments". Frontiers in Microbiology, 9: 570.
 * **qSIP**
     * Hungate, Bruce A., Rebecca L. Mau, Egbert Schwartz, J. Gregory Caporaso, Paul Dijkstra, Natasja van Gestel, Benjamin J. Koch, et al. 2015. “Quantitative Microbial Ecology Through Stable Isotope Probing.” Applied and Environmental Microbiology, August, AEM.02280–15.
 
@@ -117,6 +118,7 @@ The dataset subset that we'll be using consists of samples 6 CsCl gradients:
 1. 13C-Glu, Day 14
 1. 13C-Cel, Day 14
 
+Important note: The dataset used in this example has been filtered such that all OTUs have over 300 reads. This is not a standard operation but has been done here to reduce the size of the dataset and the processing time.
 
 Notes:
 
@@ -202,13 +204,13 @@ With a list of phyloseq objects (1 list item per treatment-control comparison), 
 # References for methods in HTSSIP
 
 * **HTS-SIP data exploration**
-    * Multiple window High Resolution Stable Isotope Probing (MW-HR-SIP) as described in [Youngblut and Buckley 2017](http://biorxiv.org/content/early/2017/05/17/138719)
+    * Multiple window High Resolution Stable Isotope Probing (MW-HR-SIP) as described in [Youngblut et al., 2017](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC5882788/)
 
 * **HR-SIP**
     * High Resolution Stable Isotope Probing (HR-SIP) as described in [Pepe-Ranney et al., 2016](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4867679/)
 
 * **MW-HR-SIP**
-    * Multiple window High Resolution Stable Isotope Probing (MW-HR-SIP) as described in [Youngblut and Buckley 2017](http://biorxiv.org/content/early/2017/05/17/138719)
+    * Multiple window High Resolution Stable Isotope Probing (MW-HR-SIP) as described in [Youngblut et al., 2017](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC5882788/)
 
 * **q-SIP**
     * Quantitative stable isotope probing (q-SIP) as described in [Hungate et al., 2015](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4592864/)
