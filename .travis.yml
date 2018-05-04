@@ -14,5 +14,5 @@ bioc_packages:
 warnings_are_errors: false
 
 r_github_packages:
-  - buckleylab/HTSSIP
+  - seb369/HTSSIP
 
