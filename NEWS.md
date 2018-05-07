@@ -1,4 +1,4 @@
-# HTSSIP 1.3.3
+# HTSSIP 1.4.0
 
 * replaced sample data with smaller dataset for storage/memory and processing time constraints
 * updated package requirements to more up-to-data packages
