@@ -5,6 +5,8 @@ test_that('Beta diversity from a list of phyloseq objects',{
 })
 
 test_that('Beta diversity from a list of phyloseq objects (parallel)',{
+  skip_on_cran()
+
   doParallel::registerDoParallel(2)
   physeq_l_d = physeq_list_betaDiv(physeq_S2D2_l, parallel=TRUE)
   expect_is(physeq_l_d, 'list')
