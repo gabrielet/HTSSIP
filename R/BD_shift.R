@@ -34,7 +34,7 @@ max_BD_range = function(BD_range, BD_min, BD_max, BD_to_set){
 #' \dontrun{
 #' data(physeq_S2D1)
 #' ex = "Substrate=='12C-Con'"
-#' metadata = format_metadata(physeq_S2D1, ex)
+#' metadata = HTSSIP:::format_metadata(physeq_S2D1, ex)
 #' }
 #'
 format_metadata = function(physeq, ex="Substrate=='12C-Con'", rep='Replicate'){
@@ -93,9 +93,9 @@ format_metadata = function(physeq, ex="Substrate=='12C-Con'", rep='Replicate'){
 #'
 #' @examples
 #' \dontrun{
-#' x = perc_overlap(0, 1, 0, 0.5)
+#' x = HTSSIP:::perc_overlap(0, 1, 0, 0.5)
 #' stopifnot(x == 50)
-#' x = perc_overlap(0, 0.5, 0, 1)
+#' x = HTSSIP:::perc_overlap(0, 0.5, 0, 1)
 #' stopifnot(x == 100)
 #' }
 #'
@@ -123,8 +123,8 @@ perc_overlap = function(x.start, x.end, y.start, y.end){
 #' \dontrun{
 #' data(physeq_S2D2)
 #' ex = "Substrate=='12C-Con'"
-#' metadata = format_metadata(physeq_S2D2, ex)
-#' m = fraction_overlap(metadata)
+#' metadata = HTSSIP:::format_metadata(physeq_S2D2, ex)
+#' m = HTSSIP:::fraction_overlap(metadata)
 #' head(m)
 #' }
 #'
@@ -162,7 +162,7 @@ fraction_overlap = function(metadata){
 #'                              weighted=TRUE,
 #'                              fast=TRUE,
 #'                              normalized=FALSE)
-#' physeq_S2D2_d = parse_dist(physeq_S2D2_d)
+#' physeq_S2D2_d = HTSSIP:::parse_dist(physeq_S2D2_d)
 #' head(physeq_S2D2_d)
 #' }
 #'

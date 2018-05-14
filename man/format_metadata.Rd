@@ -25,7 +25,7 @@ Format phyloseq metadata for calculating BD range overlaps.
 \dontrun{
 data(physeq_S2D1)
 ex = "Substrate=='12C-Con'"
-metadata = format_metadata(physeq_S2D1, ex)
+metadata = HTSSIP:::format_metadata(physeq_S2D1, ex)
 }
 
 }
