@@ -23,9 +23,9 @@ The fraction of overlap is relative to Range X (see examples).
 }
 \examples{
 \dontrun{
-x = perc_overlap(0, 1, 0, 0.5)
+x = HTSSIP:::perc_overlap(0, 1, 0, 0.5)
 stopifnot(x == 50)
-x = perc_overlap(0, 0.5, 0, 1)
+x = HTSSIP:::perc_overlap(0, 0.5, 0, 1)
 stopifnot(x == 100)
 }
 

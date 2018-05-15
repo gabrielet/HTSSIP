@@ -1,3 +1,8 @@
+# HTSSIP 1.4.0
+
+* replaced sample data with smaller dataset for storage/memory and processing time constraints
+* updated package requirements to more up-to-data packages
+
 # HTSSIP 1.3.2
 
 * transferred maintainership from NY to SB

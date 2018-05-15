@@ -19,8 +19,8 @@ Calculate the BD range overlap of gradient fractions
 \dontrun{
 data(physeq_S2D2)
 ex = "Substrate=='12C-Con'"
-metadata = format_metadata(physeq_S2D2, ex)
-m = fraction_overlap(metadata)
+metadata = HTSSIP:::format_metadata(physeq_S2D2, ex)
+m = HTSSIP:::fraction_overlap(metadata)
 head(m)
 }
 

@@ -23,7 +23,7 @@ physeq_S2D2_d = phyloseq::distance(physeq_S2D2,
                              weighted=TRUE,
                              fast=TRUE,
                              normalized=FALSE)
-physeq_S2D2_d = parse_dist(physeq_S2D2_d)
+physeq_S2D2_d = HTSSIP:::parse_dist(physeq_S2D2_d)
 head(physeq_S2D2_d)
 }
 
