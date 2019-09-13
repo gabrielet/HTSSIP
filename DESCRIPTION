@@ -31,6 +31,7 @@ Imports:
     coenocliner (>= 0.2.2),
     lazyeval(>= 0.2.0)
 RoxygenNote: 6.1.1
+Encoding: UTF-8
 Suggests:
     testthat,
     knitr,
