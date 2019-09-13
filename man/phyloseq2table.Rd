@@ -4,8 +4,9 @@
 \alias{phyloseq2table}
 \title{Phyloseq conversion to a ggplot-formatted table}
 \usage{
-phyloseq2table(physeq, include_sample_data = FALSE, sample_col_keep = NULL,
-  include_tax_table = FALSE, tax_col_keep = NULL, control_expr = NULL)
+phyloseq2table(physeq, include_sample_data = FALSE,
+  sample_col_keep = NULL, include_tax_table = FALSE,
+  tax_col_keep = NULL, control_expr = NULL)
 }
 \arguments{
 \item{physeq}{Phyloseq object}

@@ -1,7 +1,7 @@
 Package: HTSSIP
 Type: Package
 Title: High Throughput Sequencing of Stable Isotope Probing Data Analysis
-Version: 1.4.0
+Version: 1.4.1
 Authors@R: c(
     person("Nicholas", "Youngblut", email="nyoungb2@gmail.com", role=c("aut")),
     person("Samuel", "Barnett", email="seb369@cornell.edu", role=c("cre", "ctb"))
@@ -30,11 +30,10 @@ Imports:
     phyloseq (>= 1.20.0),
     coenocliner (>= 0.2.2),
     lazyeval(>= 0.2.0)
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 Suggests:
     testthat,
     knitr,
     rmarkdown,
     doParallel
 VignetteBuilder: knitr
-

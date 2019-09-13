@@ -156,7 +156,7 @@ qSIP_atom_excess = function(physeq,
     # BD shift (Z)
     dplyr::group_by_('OTU') %>%
     dplyr::mutate_(IS_CONTROL = "ifelse(IS_CONTROL==TRUE, 'Wlight', 'Wlab')") %>%
-    tidyr::spread_("IS_CONTROL", "Wm") %>%
+    tidyr::spread("IS_CONTROL", "Wm") %>%
     dplyr::mutate_(Z = "Wlab - Wlight") %>%
     dplyr::ungroup()
 
@@ -229,7 +229,7 @@ sample_W = function(df, n_sample){
   dots = stats::setNames(list(~lapply(data, sample_W, n_sample=n_sample)), "ret")
   df_OTU_W = atomX$W %>%
     dplyr::group_by_("OTU") %>%
-    tidyr::nest_(key_col="data") %>%
+    tidyr::nest() %>%
     dplyr::mutate_(.dots=dots) %>%
     dplyr::select_("-data") %>%
     tidyr::unnest()
