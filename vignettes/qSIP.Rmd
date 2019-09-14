@@ -95,7 +95,9 @@ The `treatment_rep` option designates which column in the `sample_data` table de
 ```{r}
 # The 'Treatment' column designates treatment vs control
 # The 'Replicate' column designates treatment replicates
-physeq_rep3 %>% sample_data %>% dplyr::select(Treatment, Replicate) %>% distinct
+data.frame(sample_data(physeq_rep3)) %>%
+  dplyr::select(Treatment, Replicate) %>%
+  distinct
 ```
 
 ```{r}

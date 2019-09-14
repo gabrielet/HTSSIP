@@ -4,8 +4,8 @@
 \alias{qSIP_bootstrap}
 \title{Calculate bootstrap CI for atom fraction excess using q-SIP method}
 \usage{
-qSIP_bootstrap(atomX, isotope = "13C", n_sample = c(3, 3), n_boot = 10,
-  parallel = FALSE, a = 0.1)
+qSIP_bootstrap(atomX, isotope = "13C", n_sample = c(3, 3),
+  n_boot = 10, parallel = FALSE, a = 0.1)
 }
 \arguments{
 \item{atomX}{A list object created by \code{qSIP_atom_excess()}}

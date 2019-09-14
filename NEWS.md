@@ -1,3 +1,7 @@
+# HTSSIP 1.4.1
+
+* Fixed defunct tidyr functions nest_() and unnest_(), and depreciated tidyr functions spread_() and gather_(). This is in compliance with tidyr version 1.0.0
+
 # HTSSIP 1.4.0
 
 * replaced sample data with smaller dataset for storage/memory and processing time constraints

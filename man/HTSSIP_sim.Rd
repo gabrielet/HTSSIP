@@ -4,8 +4,9 @@
 \alias{HTSSIP_sim}
 \title{Simulate a HTS-SIP dataset}
 \usage{
-HTSSIP_sim(locs, params, responseModel = "gaussian", countModel = "poisson",
-  meta = NULL, sim_tree = FALSE, parallel = FALSE, ...)
+HTSSIP_sim(locs, params, responseModel = "gaussian",
+  countModel = "poisson", meta = NULL, sim_tree = FALSE,
+  parallel = FALSE, ...)
 }
 \arguments{
 \item{locs}{Buoyant densities of each gradient fraction}

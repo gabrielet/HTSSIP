@@ -106,10 +106,9 @@ delta_BD = function(physeq, control_expr, n=20, BD_min=NULL, BD_max=NULL){
   df_OTU = df_OTU %>%
     # linear interpolation for each OTU in each gradient
     dplyr::group_by_("IS_CONTROL", "OTU") %>%
-    tidyr::nest_(key_col='data',
-                 nest_cols=nest_cols) %>%
+    tidyr::nest(nest_cols) %>%
     dplyr::mutate_(.dots=dots) %>%
-    tidyr::unnest_(unnest_cols='data') %>%
+    tidyr::unnest() %>%
     # center of mass
     dplyr::group_by_("IS_CONTROL", "OTU") %>%
     dplyr::summarize_(center_of_mass = "stats::weighted.mean(x=Buoyant_density,
@@ -117,7 +116,7 @@ delta_BD = function(physeq, control_expr, n=20, BD_min=NULL, BD_max=NULL){
     # delta BD
     dplyr::group_by_("OTU") %>%
     dplyr::mutate_(IS_CONTROL="ifelse(IS_CONTROL==TRUE, 'CM_control', 'CM_treatment')") %>%
-    tidyr::spread_("IS_CONTROL", "center_of_mass") %>%
+    tidyr::spread("IS_CONTROL", "center_of_mass") %>%
     dplyr::mutate_(delta_BD="CM_treatment - CM_control") %>%
     dplyr::ungroup()
 
