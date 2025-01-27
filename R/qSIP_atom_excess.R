@@ -81,10 +81,10 @@ qSIP_atom_excess_format = function(physeq, control_expr, treatment_rep){
   # removing 'infinite' BD values
   tmp = colnames(df_OTU)
   df_OTU = df_OTU %>%
-    dplyr::mutate_(Buoyant_density = "as.numeric(as.character(Buoyant_density))",
-                   Count = "as.numeric(as.character(Count))") %>%
-    dplyr::filter_('! is.infinite(Buoyant_density)') %>%
-    dplyr::filter_('! is.na(Buoyant_density)') %>%
+    dplyr::mutate(Buoyant_density = rlang::eval_tidy(rlang::parse_expr("as.numeric(as.character(Buoyant_density))")),
+                  Count = rlang::eval_tidy(rlang::parse_expr("as.numeric(as.character(Count))"))) %>%
+    dplyr::filter(rlang::eval_tidy(rlang::parse_expr("! is.infinite(Buoyant_density)"))) %>%
+    dplyr::filter(rlang::eval_tidy(rlang::parse_expr("! is.na(Buoyant_density)"))) %>%
     as.data.frame
   colnames(df_OTU) = tmp
 
@@ -142,44 +142,38 @@ qSIP_atom_excess = function(physeq,
     # BD shift (Z)
     df_OTU_W = df_OTU %>%
       # weighted mean buoyant density (W)
-      dplyr::mutate_(Buoyant_density = "as.numeric(as.character(Buoyant_density))",
-                     Count = "as.numeric(as.character(Count))") %>%
-      dplyr::group_by_('IS_CONTROL', 'OTU', treatment_rep) %>%
-      dplyr::summarize_(W = "stats::weighted.mean(Buoyant_density, Count, na.rm=TRUE)") %>%
+      dplyr::mutate(Buoyant_density = rlang::eval_tidy(rlang::parse_expr("as.numeric(as.character(Buoyant_density))")),
+                     Count = rlang::eval_tidy(rlang::parse_expr("as.numeric(as.character(Count))"))) %>%
+      dplyr::group_by(IS_CONTROL, OTU, get(treatment_rep)) %>%
+      dplyr::summarise(W = stats::weighted.mean(Buoyant_density, Count, na.rm=TRUE)) %>%
       dplyr::ungroup()
+    colnames(df_OTU_W) <- c("IS_CONTROL", "OTU", treatment_rep, "W")
   }
 
   df_OTU_s = df_OTU_W %>%
     # mean W of replicate gradients
-    dplyr::group_by_('IS_CONTROL', 'OTU') %>%
-    dplyr::summarize_(Wm = "mean(W, na.rm=TRUE)") %>%
+    dplyr::group_by(IS_CONTROL, OTU) %>%
+    dplyr::summarise(Wm = mean(W, na.rm=TRUE)) %>%
     # BD shift (Z)
-    dplyr::group_by_('OTU') %>%
-    dplyr::mutate_(IS_CONTROL = "ifelse(IS_CONTROL==TRUE, 'Wlight', 'Wlab')") %>%
+    dplyr::group_by(OTU) %>%
+    dplyr::mutate(IS_CONTROL = rlang::eval_tidy(rlang::parse_expr("ifelse(IS_CONTROL==TRUE, 'Wlight', 'Wlab')"))) %>%
     tidyr::spread("IS_CONTROL", "Wm") %>%
-    dplyr::mutate_(Z = "Wlab - Wlight") %>%
+    dplyr::mutate(Z = rlang::eval_tidy(rlang::parse_expr("Wlab - Wlight"))) %>%
     dplyr::ungroup()
 
   # atom excess (A)
   ## pt1
-  dots = list(~calc_Gi(Wlight))
-  dots = stats::setNames(dots, "Gi")
   df_OTU_s = df_OTU_s %>%
-    mutate_(.dots=dots) %>%
-    mutate_(Mlight = "0.496 * Gi + 307.691")
+    mutate(Gi = rlang::eval_tidy(rlang::parse_expr("calc_Gi(Wlight)"))) %>%
+    mutate(Mlight = rlang::eval_tidy(rlang::parse_expr("0.496 * Gi + 307.691")))
   ## pt2
   MoreArgs = list(isotope=isotope)
-  dots = list(~mapply(calc_Mheavymax, Mlight=Mlight, Gi=Gi, MoreArgs=MoreArgs))
-  dots = stats::setNames(dots, "Mheavymax")
   df_OTU_s = df_OTU_s %>%
-    dplyr::mutate_(.dots=dots)
+    dplyr::mutate(Mheavymax = rlang::eval_tidy(rlang::parse_expr("mapply(calc_Mheavymax, Mlight=Mlight, Gi=Gi, MoreArgs=MoreArgs)")))
   ## pt3
-  dots = list(~mapply(calc_atom_excess, Mlab=Mlab, Mlight=Mlight,
-                      Mheavymax=Mheavymax, MoreArgs=MoreArgs))
-  dots = stats::setNames(dots, "A")
   df_OTU_s = df_OTU_s %>%
-    dplyr::mutate_(Mlab = "(Z / Wlight + 1) * Mlight") %>%
-    dplyr::mutate_(.dots=dots)
+    dplyr::mutate(Mlab = rlang::eval_tidy(rlang::parse_expr("(Z / Wlight + 1) * Mlight"))) %>%
+    dplyr::mutate(A = rlang::eval_tidy(rlang::parse_expr("mapply(calc_atom_excess, Mlab=Mlab, Mlight=Mlight, Mheavymax=Mheavymax, MoreArgs=MoreArgs)")))
 
   ## flow control: bootstrap
   if(no_boot){
@@ -226,13 +220,12 @@ sample_W = function(df, n_sample){
                            bootstrap_id = 1){
   # making a new (subsampled with replacement) dataset
   n_sample = c(3,3)  # control, treatment
-  dots = stats::setNames(list(~lapply(data, sample_W, n_sample=n_sample)), "ret")
   df_OTU_W = atomX$W %>%
-    dplyr::group_by_("OTU") %>%
+    dplyr::group_by(OTU) %>%
     tidyr::nest() %>%
-    dplyr::mutate_(.dots=dots) %>%
-    dplyr::select_("-data") %>%
-    tidyr::unnest()
+    dplyr::mutate(ret = rlang::eval_tidy(rlang::parse_expr("lapply(data, sample_W, n_sample=n_sample)"))) %>%
+    dplyr::select(-data) %>%
+    tidyr::unnest(cols = ret)
 
   # calculating atom excess
   atomX = qSIP_atom_excess(physeq=NULL,
@@ -289,14 +282,9 @@ qSIP_bootstrap = function(atomX, isotope='13C', n_sample=c(3,3),
                         .parallel=parallel)
 
   # calculating atomX CIs for each OTU
-  mutate_call1 = lazyeval::interp(~ stats::quantile(A, a/2, na.rm=TRUE),
-                                 A = as.name("A"))
-  mutate_call2 = lazyeval::interp(~ stats::quantile(A, 1-a/2, na.rm=TRUE),
-                                 A = as.name("A"))
-  dots = stats::setNames(list(mutate_call1, mutate_call2), c("A_CI_low", "A_CI_high"))
   df_boot = df_boot %>%
-    dplyr::group_by_("OTU") %>%
-    dplyr::summarize_(.dots=dots)
+    dplyr::group_by(OTU) %>%
+    dplyr::summarise(A_CI_low = rlang::eval_tidy(rlang::parse_expr("stats::quantile(A, a/2, na.rm=TRUE)")), A_CI_high = rlang::eval_tidy(rlang::parse_expr("stats::quantile(A, 1-a/2, na.rm=TRUE)")))
 
   # combining with atomX summary data
   df_boot = dplyr::inner_join(atomX$A, df_boot, c('OTU'='OTU'))

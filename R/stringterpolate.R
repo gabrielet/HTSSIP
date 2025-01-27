@@ -146,7 +146,7 @@ evaluate_matches <- function(matches, env){
 #' @return An interpolated character string.
 stringterpolate <- function(string, env = parent.frame()){
   # Find expression placeholders
-  matches      <- match_placeholders(string)
+  matches <- match_placeholders(string)
 
   # Evaluate them to get the replacement strings.
   replacements <- evaluate_matches(matches$matches, env)

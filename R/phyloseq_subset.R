@@ -32,8 +32,8 @@
 get_treatment_params = function(physeq, exp_params, treatment=NULL){
   physeq_m = phyloseq2df(physeq, phyloseq::sample_data)
   # filter out control (if needed; depending on subsetting expression)
-  if(!is.null(treatment)){
-    physeq_m = dplyr::filter_(physeq_m, treatment)
+  if(!is.null(treatment)){  
+    physeq_m = dplyr::filter(physeq_m, rlang::eval_tidy(rlang::parse_expr(treatment)))
   }
 
   # all pairwise params
@@ -125,7 +125,7 @@ phyloseq_subset = function(physeq, params, ex){
     # x should be a list of parameters
     exx = stringterpolate(ex, x)
     physeq.m = phyloseq2df(physeq, phyloseq::sample_data)
-    bool = dplyr::mutate_(physeq.m, exx)[,ncol(physeq.m)+1]
+    bool = dplyr::mutate(physeq.m, rlang::eval_tidy(rlang::parse_expr(exx)))[,ncol(physeq.m)+1]
     phyloseq::prune_samples(bool, physeq)
   })
   return(physeq_l)

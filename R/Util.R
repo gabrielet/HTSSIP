@@ -98,7 +98,7 @@ phyloseq2table = function(physeq,
     if(! is.null(control_expr)){
       # setting control
       df_meta = df_meta %>%
-        dplyr::mutate_(IS_CONTROL = control_expr)
+        dplyr::mutate(IS_CONTROL = rlang::eval_tidy(rlang::parse_expr(control_expr)))
       # check
       if(all(df_meta$IS_CONTROL == FALSE)){
         stop('control_expr is not valid; no samples selected as controls')
@@ -108,7 +108,7 @@ phyloseq2table = function(physeq,
     ## trimming
     if(!is.null(sample_col_keep)){
       sample_col_keep = c('SAMPLE_JOIN', sample_col_keep)
-      df_meta = dplyr::select_(df_meta, .dots=as.list(sample_col_keep))
+      df_meta = dplyr::select(df_meta, all_of(sample_col_keep))
     }
     # join
     df_OTU = dplyr::inner_join(df_OTU, df_meta, c('SAMPLE_JOIN'))
@@ -125,7 +125,7 @@ phyloseq2table = function(physeq,
     ## trimming
     if(!is.null(tax_col_keep)){
       tax_col_keep = c('OTU', tax_col_keep)
-      df_tax = dplyr::select_(df_tax, .dots=as.list(tax_col_keep))
+      df_tax = dplyr::select(df_tax, all_of(tax_col_keep))
     }
     # join
     df_OTU = dplyr::inner_join(df_OTU, df_tax, c('OTU'))
