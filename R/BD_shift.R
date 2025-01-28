@@ -52,29 +52,28 @@ format_metadata = function(physeq, ex="Substrate=='12C-Con'", rep='Replicate'){
   if(! rep %in% colnames(metadata)){
     metadata[,rep] = 1
   }
-
   # formatting
   metadata$BD_min = NULL
   metadata = metadata %>%
-    dplyr::mutate_(IS__CONTROL = ex) %>%
-    dplyr::rename_('BD_min' = "Buoyant_density") %>%
-    dplyr::mutate_(Fraction = "as.numeric(as.character(Fraction))",
-                   BD_min = "as.numeric(as.character(BD_min))") %>%
-    dplyr::arrange_("BD_min") %>%
-    dplyr::group_by_("IS__CONTROL", rep) %>%
-    dplyr::mutate_(BD_max = "lead(BD_min)",
-                   BD_max = "ifelse(is.na(BD_max), BD_min, BD_max)",
-                   BD_range = "BD_max - BD_min") %>%
+    dplyr::mutate(IS__CONTROL = rlang::eval_tidy(rlang::parse_expr(ex))) %>%
+    dplyr::rename(BD_min = Buoyant_density) %>%
+    dplyr::mutate(Fraction = rlang::eval_tidy(rlang::parse_expr("as.numeric(as.character(Fraction))")),
+                   BD_min = rlang::eval_tidy(rlang::parse_expr("as.numeric(as.character(BD_min))"))) %>%
+    dplyr::arrange(BD_min) %>%
+    dplyr::group_by(IS__CONTROL, get(rep)) %>%
+    dplyr::mutate(BD_max = rlang::eval_tidy(rlang::parse_expr("lead(BD_min)")),
+                   BD_max = rlang::eval_tidy(rlang::parse_expr("ifelse(is.na(BD_max), BD_min, BD_max)")),
+                   BD_range = rlang::eval_tidy(rlang::parse_expr("BD_max - BD_min"))) %>%
     dplyr::group_by() %>%
-    dplyr::mutate_(median_BD_range = "stats::median(BD_range, na.rm=T)") %>%
+    dplyr::mutate(median_BD_range = rlang::eval_tidy(rlang::parse_expr("stats::median(BD_range, na.rm=T)"))) %>%
     dplyr::ungroup()
 
   metadata$BD_max = mapply(max_BD_range, metadata$BD_range,
                            metadata$BD_min, metadata$BD_max,
                            BD_to_set = metadata$median_BD_range)
   metadata = metadata %>%
-    dplyr::mutate_(BD_range = "BD_max - BD_min") %>%
-    dplyr::select_("METADATA_ROWNAMES", rep, "IS__CONTROL", "BD_min", "BD_max", "BD_range")
+    dplyr::mutate(BD_range = rlang::eval_tidy(rlang::parse_expr("BD_max - BD_min"))) %>%
+    dplyr::select(METADATA_ROWNAMES, !!rep, IS__CONTROL, BD_min, BD_max, BD_range)
 
   return(metadata)
 }
@@ -129,12 +128,14 @@ perc_overlap = function(x.start, x.end, y.start, y.end){
 #' }
 #'
 fraction_overlap = function(metadata){
-  stopifnot(all(c('METADATA_ROWNAMES', 'IS__CONTROL') %in%
+  stopifnot(all(c("METADATA_ROWNAMES", "IS__CONTROL") %in%
                   colnames(metadata)))
 
-  meta_cont = filter_(metadata, "IS__CONTROL==TRUE")
+  meta_cont = filter(metadata, IS__CONTROL==TRUE)
+
   stopifnot(nrow(meta_cont) > 0)
-  meta_treat = filter_(metadata, "IS__CONTROL==FALSE")
+
+  meta_treat = filter(metadata, IS__CONTROL==FALSE)
   stopifnot(nrow(meta_treat) > 0)
 
   # merging; calculating fraction overlap; filtering
@@ -173,8 +174,8 @@ parse_dist = function(d){
   df$sample = rownames(df)
   df = df %>%
     tidyr::gather('sample.y', 'distance', -sample) %>%
-    dplyr::rename_('sample.x' = "sample") %>%
-    dplyr::filter_("sample.x != sample.y")
+    dplyr::rename(sample.x = sample) %>%
+    dplyr::filter(rlang::eval_tidy(rlang::parse_expr("sample.x != sample.y")))
   return(df)
 }
 
@@ -189,11 +190,11 @@ overlap_wmean_dist = function(df_dist){
 
   # calculating weighted mean distance
   df_dist_s = df_dist %>%
-    dplyr::group_by_("sample.x", "BD_min.x") %>%
-    dplyr::mutate_(n_over_fracs = "n()",
-                   wmean_dist = "stats::weighted.mean(distance, perc_overlap)") %>%
+    dplyr::group_by(sample.x, BD_min.x) %>%
+    dplyr::mutate(n_over_fracs = rlang::eval_tidy(rlang::parse_expr("n()")),
+                   wmean_dist = rlang::eval_tidy(rlang::parse_expr("stats::weighted.mean(distance, perc_overlap)"))) %>%
     dplyr::ungroup() %>%
-    dplyr::distinct_("sample.x", "wmean_dist", .keep_all=TRUE)
+    dplyr::distinct(sample.x, wmean_dist, .keep_all=TRUE)
   return(df_dist_s)
 }
 
@@ -225,10 +226,10 @@ overlap_wmean_dist = function(df_dist){
                           colnames(phyloseq::otu_table(template)),]
     colnames(otu) = colnames(phyloseq::otu_table(template))
     metadata = metadata %>%
-      dplyr::group_by_('Replicate') %>%
-      dplyr::mutate_(Fraction = 'as.numeric(as.factor(BD_min))') %>%
+      dplyr::group_by(Replicate) %>%
+      dplyr::mutate_(Fraction = rlang::eval_tidy(rlang::parse_expr("as.numeric(as.factor(BD_min))"))) %>%
       dplyr::ungroup() %>%
-      dplyr::arrange_('Fraction')
+      dplyr::arrange(Fraction)
     otu = otu[,metadata$METADATA_ROWNAMES] %>% t
 
     # permutating across just adjacent samples
@@ -479,34 +480,30 @@ BD_shift = function(physeq, method='unifrac', weighted=TRUE,
                         .parallel=parallel_perm)
   ## parsing data
   ### actual data
+#  print((all_of("-dplyr::ends_with('.y')")))
+
   df_wmean = df_perm %>%
-    dplyr::filter_('perm_id == 0') %>%
-    dplyr::distinct_('sample.x', .keep_all=TRUE) %>%
-    dplyr::select_('-dplyr::ends_with(".y")')
+    dplyr::filter(rlang::eval_tidy(rlang::parse_expr('perm_id == 0'))) %>%
+    dplyr::distinct(sample.x, .keep_all=TRUE) %>%
+    dplyr::select(-dplyr::ends_with(".y"))
   ### permuted dataset
   df_perm = df_perm %>%
-    dplyr::filter_('perm_id > 0')
+    dplyr::filter(rlang::eval_tidy(rlang::parse_expr('perm_id > 0')))
 
   # perm CI
-  mutate_call1 = lazyeval::interp(~ stats::quantile(wmean_dist, a/2, na.rm=TRUE),
-                                  wmean_dist = as.name("wmean_dist"))
-  mutate_call2 = lazyeval::interp(~ stats::quantile(wmean_dist, 1-a/2, na.rm=TRUE),
-                                  wmean_dist = as.name("wmean_dist"))
-  dots = stats::setNames(list(mutate_call1, mutate_call2), c("wmean_dist_CI_low", "wmean_dist_CI_high"))
   ## calculating global CIs
   df_perm_global = df_perm %>%
-    dplyr::group_by_() %>%
-    dplyr::summarize_(.dots=dots)
+    dplyr::group_by() %>%
+    dplyr::summarize(wmean_dist_CI_low = rlang::eval_tidy(rlang::parse_expr("stats::quantile(wmean_dist, a/2, na.rm=TRUE)")), wmean_dist_CI_high = rlang::eval_tidy(rlang::parse_expr("stats::quantile(wmean_dist, 1-a/2, na.rm=TRUE)")))
   ## calculating CIs for each control fraction
   df_perm = df_perm %>%
-    dplyr::group_by_("sample.x", "BD_min.x") %>%
-    dplyr::summarize_(.dots=dots)
+    dplyr::group_by(sample.x, BD_min.x) %>%
+    dplyr::summarize(wmean_dist_CI_low = rlang::eval_tidy(rlang::parse_expr("stats::quantile(wmean_dist, a/2, na.rm=TRUE)")), wmean_dist_CI_high = rlang::eval_tidy(rlang::parse_expr("stats::quantile(wmean_dist, 1-a/2, na.rm=TRUE)")))
 
   # joining
   df_wmean$wmean_dist_CI_low_global = df_perm_global$wmean_dist_CI_low[1]
   df_wmean$wmean_dist_CI_high_global = df_perm_global$wmean_dist_CI_high[1]
-  df_wmean = dplyr::left_join(df_wmean, df_perm,
-                              c("sample.x", "BD_min.x"))
+  df_wmean = dplyr::left_join(df_wmean, df_perm, c("sample.x", "BD_min.x"))
 
   # return
   return(df_wmean)

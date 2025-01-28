@@ -136,7 +136,7 @@ qSIP_atom_excess = function(physeq,
   if(no_boot){
     df_OTU = qSIP_atom_excess_format(physeq, control_expr, treatment_rep)
     if(nrow(df_OTU) == 0){
-      stop('No rows in OTU table after qSIP_atom_excess_format(). Check control_exp & treatment_rep')
+      stop("No rows in OTU table after qSIP_atom_excess_format(). Check control_exp & treatment_rep")
     }
 
     # BD shift (Z)
