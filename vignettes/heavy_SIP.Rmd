@@ -28,6 +28,7 @@ First, let's load some packages including `HTSSIP`.
 ```{r, message=FALSE, warning=FALSE}
 library(dplyr)
 library(ggplot2)
+library(phyloseq)
 library(HTSSIP)
 ```
 
@@ -44,18 +45,12 @@ For unreplicated datasets (no experiment replicates of controls or treatments), 
 
 We will be using a dataset that is already parsed. See [HTSSIP introduction vignette](HTSSIP_intro.html) for a description on why dataset parsing (all treatment-control comparisons) is needed.
 
-```{r}
-physeq_S2D2_l
-```
-
-
 # One treatment-control comparison
 
 First, we'll just focus on 1 treatment-control comparison. Let's get the individual phyloseq object. 
 
 ```{r}
 physeq = physeq_S2D2_l[[1]]
-physeq
 ```
 
 Let's check that the samples belong to either a 13C-treatment or 12C-control. 
@@ -87,10 +82,6 @@ df_res$statistic %>% table
 Experimental replicates allows us to use tradional hypothesis testing (*e.g.,* t-tests) for determining significantly differ OTU abundances between treatment and controls. Note that there is a reason why more suffisticated statistical methods have been developed for assessing differentially abundant features in high throughput sequencing datasets (*e.g.,* DESeq2, EdgeR, or MetagenomeSeq). The traditional methods don't account for many challenging aspects of identifying statistically different abundances in sequence data such as i) a high number of multiple hypotheses ii) zero-inflation iii) compositional data (relative abundances; the sum-to-one constraint). 
 
 With that said, let's try out these heavy-SIP methods on a replicated dataset, with 3 experimental replicates of the control and treatment (total gradients = 6)
-
-```{r}
-physeq_rep3
-```
 
 ```{r}
 physeq_rep3 %>% sample_data %>% head(n=3)
