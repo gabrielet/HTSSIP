@@ -156,6 +156,8 @@ phyloseq_ord_plot <- function(physeq_ord_df, title=NULL, alpha=0.5, ...) {
     p <- ggplot(physeq_ord_df, aes(x=get(x_coord), y=get(y_coord))) +
     geom_point(mapping = aes(!!!ensyms(...)), pch=21, alpha=alpha) +
     scale_size(range=c(2,8)) +
+    xlab(x_coord) +
+    ylab(y_coord) +
     labs(title=title) +
     facet_wrap(~phyloseq_subset) +
     guides(fill=guide_legend(override.aes=list(shape=21))) +
@@ -176,6 +178,8 @@ phyloseq_ord_plot <- function(physeq_ord_df, title=NULL, alpha=0.5, ...) {
         geom_point(mapping = aes(!!!ensyms(...)), color="black", alpha=alpha) +
         scale_shape_manual(values=p_shape) +
         scale_size(range=c(2,8)) +
+        xlab(x_coord) +
+        ylab(y_coord) +
         guides(fill=guide_legend(override.aes=list(shape=21))) +
         labs(title=title) +
         facet_wrap(~phyloseq_subset)
