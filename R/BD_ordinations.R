@@ -22,7 +22,7 @@
 #' physeq_S2D2_l_d = physeq_list_betaDiv(physeq_S2D2_l)
 #' }
 #'
-physeq_list_betaDiv = function(physeq_l, method="unifrac", weighted=TRUE,
+physeq_list_betaDiv <- function(physeq_l, method="unifrac", weighted=TRUE,
                                 fast=TRUE, normalized=TRUE, parallel=FALSE){
   if(is.null(names(physeq_l))){
     names(physeq_l) = as.character(1:length(physeq_l))
@@ -57,7 +57,7 @@ physeq_list_betaDiv = function(physeq_l, method="unifrac", weighted=TRUE,
 #' physeq_S2D2_l_d_ord = physeq_list_ord(physeq_S2D2_l, physeq_S2D2_l_d)
 #' }
 #'
-physeq_list_ord = function(physeq_l, physeq_l_d, ord_method="NMDS"){
+physeq_list_ord <- function(physeq_l, physeq_l_d, ord_method="NMDS"){
   ord_l = list()
   for (X in names(physeq_l_d)){
    ord_l[[X]] = phyloseq::ordinate(physeq_l[[X]],
@@ -91,7 +91,7 @@ physeq_list_ord = function(physeq_l, physeq_l_d, ord_method="NMDS"){
 #' physeq_S2D2_l_d_ord_df = phyloseq_list_ord_dfs(physeq_S2D2_l, physeq_S2D2_l_d_ord)
 #' }
 #'
-phyloseq_list_ord_dfs = function(physeq_l, physeq_l_ords, parallel=FALSE){
+phyloseq_list_ord_dfs <- function(physeq_l, physeq_l_ords, parallel=FALSE){
   n = names(physeq_l) %>% as.array
   names(n) = n
 
@@ -134,7 +134,9 @@ phyloseq_list_ord_dfs = function(physeq_l, physeq_l_ords, parallel=FALSE){
 #' phyloseq_ord_plot(physeq_S2D2_l_d_ord_df)
 #' }
 #'
-phyloseq_ord_plot = function(physeq_ord_df, title=NULL, alpha=0.5, ...) {
+phyloseq_ord_plot <- function(physeq_ord_df, title=NULL, alpha=0.5, ...) {
+
+  additional_params <- list(...)
 
   if(! is.null(physeq_ord_df$NMDS1)){
     x_coord <- "NMDS1"
@@ -150,12 +152,23 @@ phyloseq_ord_plot = function(physeq_ord_df, title=NULL, alpha=0.5, ...) {
     stop("Do not recognize ordination axes")
   }
 
-  p <- ggplot(physeq_ord_df, aes(x=get(x_coord), y=get(y_coord))) +
+  if (is.null(additional_params$shape)) {
+    p <- ggplot(physeq_ord_df, aes(x=get(x_coord), y=get(y_coord))) +
     geom_point(mapping = aes(!!!ensyms(...)), pch=21, alpha=alpha) +
     scale_size(range=c(2,8)) +
     labs(title=title) +
     facet_wrap(~phyloseq_subset) +
+    guides(fill=guide_legend(override.aes=list(shape=21))) +
     theme_bw()
+  } else {
+    physeq_ord_df[, additional_params$shape] = as.character(physeq_ord_df[, additional_params$shape])
+    p <- ggplot(physeq_ord_df, aes(x=get(x_coord), y=get(y_coord))) +
+    geom_point(mapping = aes(!!!ensyms(...)), alpha=alpha) +
+    scale_size(range=c(2,8)) +
+    labs(title=title) +
+    facet_wrap(~phyloseq_subset) +
+    theme_bw()
+  }
 
   return(p)
 }
@@ -182,7 +195,7 @@ phyloseq_ord_plot = function(physeq_ord_df, title=NULL, alpha=0.5, ...) {
 #' head(physeq_S2D2_l_df, n=3)
 #' }
 #'
-SIP_betaDiv_ord = function(physeq_l, method="unifrac", weighted=TRUE,
+SIP_betaDiv_ord <- function(physeq_l, method="unifrac", weighted=TRUE,
                           fast=TRUE, normalized=TRUE, parallel=FALSE,
                           plot=FALSE){
   if(!is.list(physeq_l)){
