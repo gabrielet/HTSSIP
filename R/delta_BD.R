@@ -2,7 +2,6 @@
 lin_interp = function(df, BD_min, BD_max, n=20){
   stopifnot(!is.null(df$Buoyant_density))
   stopifnot(!is.null(df$Count))
-
   # linear interpolation function
   BDs = as.numeric(as.character(df$Buoyant_density))
   lin_fun = stats::approxfun(x=BDs, y=as.numeric(as.character(df$Count)))
@@ -82,10 +81,10 @@ delta_BD = function(physeq, control_expr, n=20, BD_min=NULL, BD_max=NULL){
 
   # total sum scaling
   df_OTU = df_OTU %>%
-    dplyr::group_by_("SAMPLE_JOIN") %>%
-    dplyr::mutate_(Count = "as.numeric(as.character(Count))",
-                   Count = "Count / sum(Count)",
-                   Count = "ifelse(is.na(Count), 0, Count)") %>%
+    dplyr::group_by(SAMPLE_JOIN) %>%
+    dplyr::mutate(Count = rlang::eval_tidy(rlang::parse_expr("as.numeric(as.character(Count))")),
+                   Count = rlang::eval_tidy(rlang::parse_expr("Count / sum(Count)")),
+                   Count = rlang::eval_tidy(rlang::parse_expr("ifelse(is.na(Count), 0, Count)"))) %>%
     dplyr::ungroup()
 
   # BD min/max
@@ -100,24 +99,21 @@ delta_BD = function(physeq, control_expr, n=20, BD_min=NULL, BD_max=NULL){
   # calculating BD shift
   ## params for standard-eval
   nest_cols = c('SAMPLE_JOIN', 'Count', 'Buoyant_density')
-  dots = list(~lapply(data, lin_interp, n=n, BD_min=BD_min, BD_max=BD_max))
-  dots = stats::setNames(dots, "data")
   ## calculation
   df_OTU = df_OTU %>%
     # linear interpolation for each OTU in each gradient
-    dplyr::group_by_("IS_CONTROL", "OTU") %>%
-    tidyr::nest(nest_cols) %>%
-    dplyr::mutate_(.dots=dots) %>%
-    tidyr::unnest() %>%
+    dplyr::group_by(IS_CONTROL, OTU) %>%
+    tidyr::nest(data = all_of(nest_cols)) %>%
+    dplyr::mutate(data = rlang::eval_tidy(rlang::parse_expr("lapply(data, lin_interp, n=n, BD_min=BD_min, BD_max=BD_max)"))) %>%
+    tidyr::unnest(data) %>%
     # center of mass
-    dplyr::group_by_("IS_CONTROL", "OTU") %>%
-    dplyr::summarize_(center_of_mass = "stats::weighted.mean(x=Buoyant_density,
-                                                             w=Count_interp)") %>%
+    dplyr::group_by(IS_CONTROL, OTU) %>%
+    dplyr::summarize(center_of_mass = rlang::eval_tidy(rlang::parse_expr("stats::weighted.mean(x=Buoyant_density, w=Count_interp)"))) %>%
     # delta BD
-    dplyr::group_by_("OTU") %>%
-    dplyr::mutate_(IS_CONTROL="ifelse(IS_CONTROL==TRUE, 'CM_control', 'CM_treatment')") %>%
+    dplyr::group_by(OTU) %>%
+    dplyr::mutate(IS_CONTROL = rlang::eval_tidy(rlang::parse_expr("ifelse(IS_CONTROL==TRUE, 'CM_control', 'CM_treatment')"))) %>%
     tidyr::spread("IS_CONTROL", "center_of_mass") %>%
-    dplyr::mutate_(delta_BD="CM_treatment - CM_control") %>%
+    dplyr::mutate(delta_BD = rlang::eval_tidy(rlang::parse_expr("CM_treatment - CM_control"))) %>%
     dplyr::ungroup()
 
   return(df_OTU)

@@ -19,32 +19,28 @@ filter_l2fc = function(df_l2fc, padj_cutoff=0.1){
   ## which sparsity cutoff and BD
   df_l2fc_s = df_l2fc %>%
     # number of rej hypo
-    dplyr::group_by_("sparsity_threshold") %>%
-    dplyr::summarize_(.dots=dots) %>%
+    dplyr::group_by(sparsity_threshold) %>%
+    dplyr::summarize(n_rej_hypo = rlang::eval_tidy(rlang::parse_expr("sum(padj<padj_cutoff)"))) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate_(rank_n_rej_hypo = "dplyr::row_number(-n_rej_hypo)") %>%
-    dplyr::filter_("rank_n_rej_hypo == 1")
+    dplyr::mutate(rank_n_rej_hypo = rlang::eval_tidy(rlang::parse_expr("dplyr::row_number(-n_rej_hypo)"))) %>%
+    dplyr::filter(rlang::eval_tidy(rlang::parse_expr("rank_n_rej_hypo == 1")))
 
   ## best sparsity cutoff
   BEST_SPAR_THRESH = as.numeric(df_l2fc_s[1,'sparsity_threshold'])
   cat('Sparsity threshold with the most rejected hypotheses:', BEST_SPAR_THRESH, '\n')
   ### filtering
-  mutate_call = lazyeval::interp(~ x==BEST_SPAR_THRESH,
-                                 x=as.name('sparsity_threshold'))
-  dots = stats::setNames(list(mutate_call), NA)
   df_l2fc = df_l2fc %>%
-    dplyr::filter_(.dots=dots)
+    dplyr::filter(rlang::eval_tidy(rlang::parse_expr("sparsity_threshold==BEST_SPAR_THRESH")))
 
   # For each sparsity threshold, selecting OTUs with highest l2fc
   ## filtering OTUs to just density window with the highest l2fc
   df_l2fc = df_l2fc %>%
-    dplyr::group_by_("OTU", "sparsity_threshold") %>%
-    dplyr::filter_("log2FoldChange == max(log2FoldChange)") %>%
+    dplyr::group_by(OTU, sparsity_threshold) %>%
+    dplyr::filter(rlang::eval_tidy(rlang::parse_expr("log2FoldChange == max(log2FoldChange)"))) %>%
     dplyr::ungroup()
 
   return(df_l2fc)
 }
-
 
 
 #' (MW-)HR-SIP analysis
@@ -153,12 +149,9 @@ HRSIP = function(physeq,
                         .parallel=parallel)
 
   # global p.adjust per sparsity_thresh
-  mutate_call = lazyeval::interp(~ stats::p.adjust(x, method=padj_method),
-                                 x = as.name('p'))
-  dots = stats::setNames(list(mutate_call), 'padj')
   df_l2fc = df_l2fc %>%
-    dplyr::group_by_("sparsity_threshold") %>%
-    dplyr::mutate_(.dots=dots) %>%
+    dplyr::group_by(sparsity_threshold) %>%
+    dplyr::mutate(padj = rlang::eval_tidy(rlang::parse_expr("stats::p.adjust(p, method=padj_method)"))) %>%
     dplyr::ungroup()
 
   # filtering l2fc table (if padj_cutoff provided)
