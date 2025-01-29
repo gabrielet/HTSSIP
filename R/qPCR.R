@@ -89,15 +89,15 @@ qPCR_sim = function(physeq,
       stop('sample_data in phyloseq object must have IS_CONTROL column (logical), or you must provide the control_expr parameter')
     }
     m = m %>%
-      dplyr::mutate_(IS_CONTROL = control_expr)
+      dplyr::mutate(IS_CONTROL = rlang::eval_tidy(rlang::parse_expr(control_expr)))
   }
 
   if(is.null(m$Buoyant_density)){
     stop('Buoyant_density column not found in phyloseq object sample_data')
   }
   m_f = m %>%
-    dplyr::mutate_(Buoyant_density = "as.numeric(as.character(Buoyant_density))") %>%
-    dplyr::select_("Buoyant_density", "IS_CONTROL")
+    dplyr::mutate(Buoyant_density = rlang::eval_tidy(rlang::parse_expr("as.numeric(as.character(Buoyant_density))"))) %>%
+    dplyr::select(Buoyant_density, IS_CONTROL)
 
   df_qPCR = plyr::mdply(m_f, .qPCR_sim,
                         control_mean_fun=control_mean_fun,
@@ -113,11 +113,10 @@ qPCR_sim = function(physeq,
   sel_cols = colnames(df_qPCR)
   sel_cols = sel_cols[grepl("^qPCR_tech_rep", sel_cols)]
   df_qPCR_s = df_qPCR %>%
-    tidyr::gather("qPCR_tech_rep_id", "qPCR_tech_rep_value", 
-    			  -"Sample", -"Buoyant_density", -"IS_CONTROL") %>%
-    dplyr::group_by_("IS_CONTROL", "Sample", "Buoyant_density") %>%
-    dplyr::summarize_(qPCR_tech_rep_mean = "mean(qPCR_tech_rep_value)",
-                      qPCR_tech_rep_sd = "stats::sd(qPCR_tech_rep_value)") %>%
+    tidyr::gather("qPCR_tech_rep_id", "qPCR_tech_rep_value", -"Sample", -"Buoyant_density", -"IS_CONTROL") %>%
+    dplyr::group_by(IS_CONTROL, Sample, Buoyant_density) %>%
+    dplyr::summarize(qPCR_tech_rep_mean = rlang::eval_tidy(rlang::parse_expr("mean(qPCR_tech_rep_value)")),
+                      qPCR_tech_rep_sd = rlang::eval_tidy(rlang::parse_expr("stats::sd(qPCR_tech_rep_value)"))) %>%
     dplyr::ungroup() %>%
     as.data.frame
 

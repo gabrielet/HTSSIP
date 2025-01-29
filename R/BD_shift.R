@@ -227,7 +227,7 @@ overlap_wmean_dist = function(df_dist){
     colnames(otu) = colnames(phyloseq::otu_table(template))
     metadata = metadata %>%
       dplyr::group_by(Replicate) %>%
-      dplyr::mutate_(Fraction = rlang::eval_tidy(rlang::parse_expr("as.numeric(as.factor(BD_min))"))) %>%
+      dplyr::mutate(Fraction = rlang::eval_tidy(rlang::parse_expr("as.numeric(as.factor(BD_min))"))) %>%
       dplyr::ungroup() %>%
       dplyr::arrange(Fraction)
     otu = otu[,metadata$METADATA_ROWNAMES] %>% t
