@@ -22,7 +22,7 @@
 #' physeq_S2D2_l_d = physeq_list_betaDiv(physeq_S2D2_l)
 #' }
 #'
-physeq_list_betaDiv = function(physeq_l, method='unifrac', weighted=TRUE,
+physeq_list_betaDiv = function(physeq_l, method="unifrac", weighted=TRUE,
                                 fast=TRUE, normalized=TRUE, parallel=FALSE){
   if(is.null(names(physeq_l))){
     names(physeq_l) = as.character(1:length(physeq_l))
@@ -57,7 +57,7 @@ physeq_list_betaDiv = function(physeq_l, method='unifrac', weighted=TRUE,
 #' physeq_S2D2_l_d_ord = physeq_list_ord(physeq_S2D2_l, physeq_S2D2_l_d)
 #' }
 #'
-physeq_list_ord = function(physeq_l, physeq_l_d, ord_method='NMDS'){
+physeq_list_ord = function(physeq_l, physeq_l_d, ord_method="NMDS"){
   ord_l = list()
   for (X in names(physeq_l_d)){
    ord_l[[X]] = phyloseq::ordinate(physeq_l[[X]],
@@ -99,7 +99,7 @@ phyloseq_list_ord_dfs = function(physeq_l, physeq_l_ords, parallel=FALSE){
      phyloseq::plot_ordination(physeq_l[[x]], physeq_l_ords[[x]], justDF=TRUE)
     }, physeq_l=physeq_l,
   physeq_l_ords=physeq_l_ords,
-  .id='phyloseq_subset',
+  .id="phyloseq_subset",
   .parallel=parallel)
 
   return(df)
@@ -113,10 +113,10 @@ phyloseq_list_ord_dfs = function(physeq_l, physeq_l_ords, parallel=FALSE){
 #'
 #' @param physeq_ord_df  A list of data.frame objects (see phyloseq_list_ord_dfs)
 #' @param title  Plot title
-#' @param point_size  The data.frame column determining point size
-#' @param point_fill  The data.frame column determining point fill color
-#' @param point_alpha  The data.frame column (or just a single value) determining point alpha
-#' @param point_shape  The data.frame column (or just a single value) determining point shape
+#' @param size  The data.frame column determining point size
+#' @param fill  The data.frame column determining point fill color
+#' @param alpha  The data.frame column (or just a single value) determining point alpha
+#' @param shape  The data.frame column (or just a single value) determining point shape
 #' @return ggplot2 object
 #'
 #' @export
@@ -134,46 +134,31 @@ phyloseq_list_ord_dfs = function(physeq_l, physeq_l_ords, parallel=FALSE){
 #' phyloseq_ord_plot(physeq_S2D2_l_d_ord_df)
 #' }
 #'
-phyloseq_ord_plot = function(physeq_ord_df, title=NULL,
-                             point_size='Buoyant_density',
-                             point_fill='Substrate',
-                             point_alpha=0.5,
-                             point_shape=NULL){
+phyloseq_ord_plot = function(physeq_ord_df, title=NULL, alpha=0.5, ...) {
 
   if(! is.null(physeq_ord_df$NMDS1)){
-    AES = aes_string(x='NMDS1', y='NMDS2')
+    x_coord <- "NMDS1"
+    y_coord <- "NMDS2"
   } else if(! is.null(physeq_ord_df$Axis.1)){
-    AES = aes_string(x='Axis.1', y='Axis.2')
+    x_coord <- "Axis.1"
+    y_coord <- "Axis.2"
   } else if(! is.null(physeq_ord_df$CA1)){
-    AES = aes_string(x='CA1', y='CA2')
+    x_coord <- "CA1"
+    y_coord <- "CA2"
+
   } else {
-    stop('Do not recognize ordination axes')
+    stop("Do not recognize ordination axes")
   }
 
-  if(!is.null(point_shape)){
-    physeq_ord_df[,point_shape] = as.character(physeq_ord_df[,point_shape])
-  }
-
-  p = ggplot(physeq_ord_df, AES) +
+  p <- ggplot(physeq_ord_df, aes(x=get(x_coord), y=get(y_coord))) +
+    geom_point(mapping = aes(!!!ensyms(...)), pch=21, alpha=alpha) +
     scale_size(range=c(2,8)) +
     labs(title=title) +
-    facet_wrap(~ phyloseq_subset) +
+    facet_wrap(~phyloseq_subset) +
     theme_bw()
-
-  if(is.null(point_shape)){
-    p = p + geom_point(aes_string(fill=point_fill,
-                                  size=point_size),
-              pch=21, alpha=point_alpha)
-  } else {
-    p = p + geom_point(aes_string(fill=point_fill,
-                                  color=point_fill,
-                                  size=point_size,
-                                  shape=point_shape), alpha=point_alpha)
-  }
 
   return(p)
 }
-
 
 #' Calculating & plotting beta diversity for a list of phyloseq objects
 #'
@@ -197,7 +182,7 @@ phyloseq_ord_plot = function(physeq_ord_df, title=NULL,
 #' head(physeq_S2D2_l_df, n=3)
 #' }
 #'
-SIP_betaDiv_ord = function(physeq_l, method='unifrac', weighted=TRUE,
+SIP_betaDiv_ord = function(physeq_l, method="unifrac", weighted=TRUE,
                           fast=TRUE, normalized=TRUE, parallel=FALSE,
                           plot=FALSE){
   if(!is.list(physeq_l)){
