@@ -162,14 +162,26 @@ phyloseq_ord_plot <- function(physeq_ord_df, title=NULL, alpha=0.5, ...) {
     theme_bw()
   } else {
     physeq_ord_df[, additional_params$shape] = as.character(physeq_ord_df[, additional_params$shape])
-    p <- ggplot(physeq_ord_df, aes(x=get(x_coord), y=get(y_coord))) +
-    geom_point(mapping = aes(!!!ensyms(...)), alpha=alpha) +
-    scale_size(range=c(2,8)) +
-    labs(title=title) +
-    facet_wrap(~phyloseq_subset) +
-    theme_bw()
+    
+    if(length(unique(physeq_ord_df[, additional_params$shape])) > 5) {
+    
+        stop("The shape can't be applied because there are more than 5 categories and not enough pch's")
+        
+    } else {
+    
+        p_shape <- c(21:25)[1:length(unique(physeq_ord_df[, additional_params$shape]))]
+	names(p_shape) <- unique(physeq_ord_df[, additional_params$shape])
+        
+        p <- ggplot(physeq_ord_df, aes(x=get(x_coord), y=get(y_coord))) +
+        geom_point(mapping = aes(!!!ensyms(...)), color="black", alpha=alpha) +
+        scale_shape_manual(values=p_shape) +
+        scale_size(range=c(2,8)) +
+        guides(fill=guide_legend(override.aes=list(shape=21))) +
+        labs(title=title) +
+        facet_wrap(~phyloseq_subset)
+    }
   }
-
+  
   return(p)
 }
 
