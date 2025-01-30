@@ -108,7 +108,7 @@ delta_BD = function(physeq, control_expr, n=20, BD_min=NULL, BD_max=NULL){
     tidyr::unnest(data) %>%
     # center of mass
     dplyr::group_by(IS_CONTROL, OTU) %>%
-    dplyr::summarize(center_of_mass = rlang::eval_tidy(rlang::parse_expr("stats::weighted.mean(x=Buoyant_density, w=Count_interp)"))) %>%
+    dplyr::summarise(center_of_mass = rlang::eval_tidy(rlang::parse_expr("stats::weighted.mean(x=Buoyant_density, w=Count_interp)")), .groups="drop_last") %>%
     # delta BD
     dplyr::group_by(OTU) %>%
     dplyr::mutate(IS_CONTROL = rlang::eval_tidy(rlang::parse_expr("ifelse(IS_CONTROL==TRUE, 'CM_control', 'CM_treatment')"))) %>%

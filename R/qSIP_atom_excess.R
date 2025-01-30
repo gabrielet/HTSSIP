@@ -145,15 +145,14 @@ qSIP_atom_excess = function(physeq,
       dplyr::mutate(Buoyant_density = rlang::eval_tidy(rlang::parse_expr("as.numeric(as.character(Buoyant_density))")),
                      Count = rlang::eval_tidy(rlang::parse_expr("as.numeric(as.character(Count))"))) %>%
       dplyr::group_by(IS_CONTROL, OTU, get(treatment_rep)) %>%
-      dplyr::summarise(W = stats::weighted.mean(Buoyant_density, Count, na.rm=TRUE)) %>%
-      dplyr::ungroup()
+      dplyr::summarise(W = stats::weighted.mean(Buoyant_density, Count, na.rm=TRUE), .groups="drop_last")
     colnames(df_OTU_W) <- c("IS_CONTROL", "OTU", treatment_rep, "W")
   }
 
   df_OTU_s = df_OTU_W %>%
     # mean W of replicate gradients
     dplyr::group_by(IS_CONTROL, OTU) %>%
-    dplyr::summarise(Wm = mean(W, na.rm=TRUE)) %>%
+    dplyr::summarise(Wm = mean(W, na.rm=TRUE), .groups="drop_last") %>%
     # BD shift (Z)
     dplyr::group_by(OTU) %>%
     dplyr::mutate(IS_CONTROL = rlang::eval_tidy(rlang::parse_expr("ifelse(IS_CONTROL==TRUE, 'Wlight', 'Wlab')"))) %>%
@@ -284,7 +283,7 @@ qSIP_bootstrap = function(atomX, isotope='13C', n_sample=c(3,3),
   # calculating atomX CIs for each OTU
   df_boot = df_boot %>%
     dplyr::group_by(OTU) %>%
-    dplyr::summarise(A_CI_low = rlang::eval_tidy(rlang::parse_expr("stats::quantile(A, a/2, na.rm=TRUE)")), A_CI_high = rlang::eval_tidy(rlang::parse_expr("stats::quantile(A, 1-a/2, na.rm=TRUE)")))
+    dplyr::summarise(A_CI_low = rlang::eval_tidy(rlang::parse_expr("stats::quantile(A, a/2, na.rm=TRUE)")), A_CI_high = rlang::eval_tidy(rlang::parse_expr("stats::quantile(A, 1-a/2, na.rm=TRUE)")), .groups="drop_last")
 
   # combining with atomX summary data
   df_boot = dplyr::inner_join(atomX$A, df_boot, c('OTU'='OTU'))

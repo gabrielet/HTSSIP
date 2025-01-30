@@ -494,11 +494,11 @@ BD_shift = function(physeq, method='unifrac', weighted=TRUE,
   ## calculating global CIs
   df_perm_global = df_perm %>%
     dplyr::group_by() %>%
-    dplyr::summarize(wmean_dist_CI_low = rlang::eval_tidy(rlang::parse_expr("stats::quantile(wmean_dist, a/2, na.rm=TRUE)")), wmean_dist_CI_high = rlang::eval_tidy(rlang::parse_expr("stats::quantile(wmean_dist, 1-a/2, na.rm=TRUE)")))
+    dplyr::summarise(wmean_dist_CI_low = rlang::eval_tidy(rlang::parse_expr("stats::quantile(wmean_dist, a/2, na.rm=TRUE)")), wmean_dist_CI_high = rlang::eval_tidy(rlang::parse_expr("stats::quantile(wmean_dist, 1-a/2, na.rm=TRUE)")), .groups="drop_last")
   ## calculating CIs for each control fraction
   df_perm = df_perm %>%
     dplyr::group_by(sample.x, BD_min.x) %>%
-    dplyr::summarize(wmean_dist_CI_low = rlang::eval_tidy(rlang::parse_expr("stats::quantile(wmean_dist, a/2, na.rm=TRUE)")), wmean_dist_CI_high = rlang::eval_tidy(rlang::parse_expr("stats::quantile(wmean_dist, 1-a/2, na.rm=TRUE)")))
+    dplyr::summarise(wmean_dist_CI_low = rlang::eval_tidy(rlang::parse_expr("stats::quantile(wmean_dist, a/2, na.rm=TRUE)")), wmean_dist_CI_high = rlang::eval_tidy(rlang::parse_expr("stats::quantile(wmean_dist, 1-a/2, na.rm=TRUE)")), .groups="drop_last")
 
   # joining
   df_wmean$wmean_dist_CI_low_global = df_perm_global$wmean_dist_CI_low[1]

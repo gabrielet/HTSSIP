@@ -109,14 +109,14 @@ qPCR_sim = function(physeq,
   colnames(df_qPCR)[3:(2+n_tech_rep)] = gsub('^', 'qPCR_tech_rep', 1:n_tech_rep)
   df_qPCR$Sample = phyloseq::sample_data(physeq) %>% rownames
 
-  # gather & summarize
+  # gather & summarise
   sel_cols = colnames(df_qPCR)
   sel_cols = sel_cols[grepl("^qPCR_tech_rep", sel_cols)]
   df_qPCR_s = df_qPCR %>%
     tidyr::gather("qPCR_tech_rep_id", "qPCR_tech_rep_value", -"Sample", -"Buoyant_density", -"IS_CONTROL") %>%
     dplyr::group_by(IS_CONTROL, Sample, Buoyant_density) %>%
-    dplyr::summarize(qPCR_tech_rep_mean = rlang::eval_tidy(rlang::parse_expr("mean(qPCR_tech_rep_value)")),
-                      qPCR_tech_rep_sd = rlang::eval_tidy(rlang::parse_expr("stats::sd(qPCR_tech_rep_value)"))) %>%
+    dplyr::summarise(qPCR_tech_rep_mean = rlang::eval_tidy(rlang::parse_expr("mean(qPCR_tech_rep_value)")),
+                      qPCR_tech_rep_sd = rlang::eval_tidy(rlang::parse_expr("stats::sd(qPCR_tech_rep_value)")), .groups="drop_last") %>%
     dplyr::ungroup() %>%
     as.data.frame
 

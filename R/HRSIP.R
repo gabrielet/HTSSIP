@@ -20,7 +20,7 @@ filter_l2fc = function(df_l2fc, padj_cutoff=0.1){
   df_l2fc_s = df_l2fc %>%
     # number of rej hypo
     dplyr::group_by(sparsity_threshold) %>%
-    dplyr::summarize(n_rej_hypo = rlang::eval_tidy(rlang::parse_expr("sum(padj<padj_cutoff)"))) %>%
+    dplyr::summarise(n_rej_hypo = rlang::eval_tidy(rlang::parse_expr("sum(padj<padj_cutoff)")), .groups="drop_last")  %>%
     dplyr::ungroup() %>%
     dplyr::mutate(rank_n_rej_hypo = rlang::eval_tidy(rlang::parse_expr("dplyr::row_number(-n_rej_hypo)"))) %>%
     dplyr::filter(rlang::eval_tidy(rlang::parse_expr("rank_n_rej_hypo == 1")))
@@ -137,6 +137,7 @@ HRSIP = function(physeq,
   density_windows$.LEFT_JOIN_COLUMN = 1
   sparsity_threshold = as.data.frame(sparsity_threshold)
   sparsity_threshold$.LEFT_JOIN_COLUMN = 1
+
   m = dplyr::left_join(density_windows, sparsity_threshold, c('.LEFT_JOIN_COLUMN'))
   m$.LEFT_JOIN_COLUMN = NULL
 
