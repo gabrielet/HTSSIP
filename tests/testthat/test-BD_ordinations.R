@@ -72,7 +72,7 @@ test_that('Plot comparing all',{
   physeq_S2D2_df = SIP_betaDiv_ord(physeq_S2D2)
   expect_is(physeq_S2D2_df, 'data.frame')
   ## plotting
-  physeq_S2D2_df_p = phyloseq_ord_plot(physeq_S2D2_df, point_shape='Day')
+  physeq_S2D2_df_p = phyloseq_ord_plot(physeq_S2D2_df, shape='Day')
   physeq_S2D2_df_p
   expect_is(physeq_S2D2_df_p, 'ggplot')
 })
