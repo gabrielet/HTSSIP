@@ -138,7 +138,13 @@ HRSIP = function(physeq,
   sparsity_threshold = as.data.frame(sparsity_threshold)
   sparsity_threshold$.LEFT_JOIN_COLUMN = 1
 
-  m = dplyr::left_join(density_windows, sparsity_threshold, c('.LEFT_JOIN_COLUMN'), relationship = "many-to-many")	################ THIS LINE IS THROWING A WARNING IN TESTING PHASE ################
+  ################ THIS LINE IS THROWING A WARNING IN TESTING PHASE ################
+  ################ BUT NOT WHILE RUNNING "NORMALLY" ################
+  ################ SOMETHING LIKE THIS: https://github.com/r-lib/testthat/issues/958 ################
+
+  ################ THE WARNING IS SOLVED BY ADDING RELATIONSHIP = "MANY-TO-MANY" ################
+  m = dplyr::left_join(density_windows, sparsity_threshold, c('.LEFT_JOIN_COLUMN'), relationship = "many-to-many")
+
   m$.LEFT_JOIN_COLUMN = NULL
 
   # calc l2fc
