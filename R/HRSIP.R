@@ -110,9 +110,7 @@ filter_l2fc = function(df_l2fc, padj_cutoff=0.1){
 HRSIP = function(physeq,
                  design,
                  density_windows=data.frame(density_min=c(1.7), density_max=c(1.75)),
-#                 sparsity_threshold=seq(0, 0.3, 0.1),
-
-                 sparsity_threshold=seq(0:1, by=0.1),	################ TESTING THE WARNING ################
+                 sparsity_threshold=seq(0, 0.3, 0.1),
                  sparsity_apply='all',
                  l2fc_threshold=0.25,
                  padj_method='BH',
