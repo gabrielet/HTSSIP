@@ -110,7 +110,9 @@ filter_l2fc = function(df_l2fc, padj_cutoff=0.1){
 HRSIP = function(physeq,
                  design,
                  density_windows=data.frame(density_min=c(1.7), density_max=c(1.75)),
-                 sparsity_threshold=seq(0, 0.3, 0.1),
+#                 sparsity_threshold=seq(0, 0.3, 0.1),
+
+                 sparsity_threshold=seq(0:1, by=0.1),	################ TESTING THE WARNING ################
                  sparsity_apply='all',
                  l2fc_threshold=0.25,
                  padj_method='BH',
@@ -138,7 +140,7 @@ HRSIP = function(physeq,
   sparsity_threshold = as.data.frame(sparsity_threshold)
   sparsity_threshold$.LEFT_JOIN_COLUMN = 1
 
-  m = dplyr::left_join(density_windows, sparsity_threshold, c('.LEFT_JOIN_COLUMN'))
+  m = dplyr::left_join(density_windows, sparsity_threshold, c('.LEFT_JOIN_COLUMN'), relationship = "many-to-many")	################ THIS LINE IS THROWING A WARNING IN TESTING PHASE ################
   m$.LEFT_JOIN_COLUMN = NULL
 
   # calc l2fc
