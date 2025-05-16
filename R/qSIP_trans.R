@@ -53,15 +53,13 @@ tss = function(x, MARGIN=2, na.rm=FALSE){
 #' data(physeq_rep3_qPCR)
 #' physeq_rep3_t = OTU_qPCR_trans(physeq_rep3, physeq_rep3_qPCR)
 #'
-OTU_qPCR_trans = function(physeq, qPCR,
-                          sample_idx='Sample',
-                          value_idx='qPCR_tech_rep_mean'){
+OTU_qPCR_trans = function(physeq, qPCR, sample_idx='Sample', value_idx='qPCR_tech_rep_mean'){
   # means of qPCR (if needed)
   if(!is.null(qPCR$summary)){
     qPCR = qPCR$summary
   }
   stopifnot(class(qPCR)=='data.frame' | class(qPCR)=='matrix')
-  stopifnot(!is.null(qPCR$Sample))
+  stopifnot(!is.null(qPCR[,sample_idx]))
 
   # OTU table
   df_OTU_col = colnames(phyloseq::otu_table(physeq))

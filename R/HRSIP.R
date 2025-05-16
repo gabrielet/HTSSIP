@@ -109,13 +109,21 @@ filter_l2fc = function(df_l2fc, padj_cutoff=0.1){
 #'
 HRSIP = function(physeq,
                  design,
-                 density_windows=data.frame(density_min=c(1.7), density_max=c(1.75)),
+                 density_windows,
                  sparsity_threshold=seq(0, 0.3, 0.1),
                  sparsity_apply='all',
                  l2fc_threshold=0.25,
                  padj_method='BH',
                  padj_cutoff=NULL,
                  parallel=FALSE){
+# physeq <- phylo_subset[[elemn]] ; design = ~Substrate ; padj_cutoff = padj_cutoff ; sparsity_threshold = c(0,0.15,0.3) ; density_windows=data.frame(density_min=c(1.7), density_max=c(1.75)) ; sparsity_apply='all' ; l2fc_threshold=0.25 ; padj_method='BH' ; parallel=FALSE
+
+  if (!"Buoyant_density" %in% colnames(sample_data(physeq))) {
+    stop("no column called Buoyant_density was found in the metadata table")
+  }
+
+  # define density windows according to available data
+  density_windows <- data.frame(density_min=min(sample_data(physeq)$Buoyant_density), density_max=max(sample_data(physeq)$Buoyant_density))
 
   # assertions
   if(is.factor(density_windows)){

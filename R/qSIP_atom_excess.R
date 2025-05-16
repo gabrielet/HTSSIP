@@ -71,6 +71,9 @@ calc_atom_excess = function(Mlab, Mlight, Mheavymax, isotope='13C'){
 #' @return numeric value: atom fraction excess (A)
 #'
 qSIP_atom_excess_format = function(physeq, control_expr, treatment_rep){
+
+  # physeq <- phylo_genus ; control_expr <- paste0("Substrate==\"", control_substrate, "\""); treatment_rep="Replicate" ;
+
   # formatting input
   cols = c('IS_CONTROL', 'Buoyant_density', treatment_rep)
   df_OTU = phyloseq2table(physeq,
@@ -121,11 +124,10 @@ qSIP_atom_excess_format = function(physeq, control_expr, treatment_rep){
 #'                          treatment_rep='Replicate')
 #' }
 #'
-qSIP_atom_excess = function(physeq,
-                            control_expr,
-                            treatment_rep=NULL,
-                            isotope='13C',
-                            df_OTU_W=NULL){
+qSIP_atom_excess = function(physeq, control_expr, treatment_rep=NULL, isotope='13C', df_OTU_W=NULL){
+
+  # physeq <- phylo_genus ; control_expr <- paste0("Substrate==\"", control_substrate, "\"") ; isotope="13C" ; treatment_rep="Replicate" ; df_OTU_W = NULL
+
   # formatting input
   if(is.null(df_OTU_W)){
     no_boot = TRUE
@@ -145,8 +147,17 @@ qSIP_atom_excess = function(physeq,
       dplyr::mutate(Buoyant_density = rlang::eval_tidy(rlang::parse_expr("as.numeric(as.character(Buoyant_density))")),
                      Count = rlang::eval_tidy(rlang::parse_expr("as.numeric(as.character(Count))"))) %>%
       dplyr::group_by(IS_CONTROL, OTU, get(treatment_rep)) %>%
+      # this will return NaN when sum(Counts) == 0
       dplyr::summarise(W = stats::weighted.mean(Buoyant_density, Count, na.rm=TRUE), .groups="drop_last")
     colnames(df_OTU_W) <- c("IS_CONTROL", "OTU", treatment_rep, "W")
+
+############    df_OTU_With_Counts = df_OTU %>%
+############      # weighted mean buoyant density (W)
+############      dplyr::mutate(Buoyant_density = rlang::eval_tidy(rlang::parse_expr("as.numeric(as.character(Buoyant_density))")),
+############                     Count = rlang::eval_tidy(rlang::parse_expr("as.numeric(as.character(Count))"))) %>%
+############      dplyr::group_by(IS_CONTROL, OTU, get(treatment_rep)) %>%
+############      dplyr::summarise(C = sum(Count), W = stats::weighted.mean(Buoyant_density, Count, na.rm=TRUE), .groups="drop_last")
+
   }
 
   df_OTU_s = df_OTU_W %>%
@@ -181,7 +192,6 @@ qSIP_atom_excess = function(physeq,
     return(df_OTU_s)
   }
 }
-
 
 # sampling with replacement from control & treatment for each OTU
 sample_W = function(df, n_sample){

@@ -77,12 +77,10 @@ phyloseq2df = function(physeq, table_func){
 #' head(df_OTU)
 #' }
 #'
-phyloseq2table = function(physeq,
-                          include_sample_data=FALSE,
-                          sample_col_keep=NULL,
-                          include_tax_table=FALSE,
-                          tax_col_keep=NULL,
-                          control_expr=NULL){
+phyloseq2table = function(physeq, include_sample_data=FALSE, sample_col_keep=NULL, include_tax_table=FALSE, tax_col_keep=NULL, control_expr=NULL){
+
+# physeq <- phylo_single_sample ; control_expr <- "Substrate==control_substrate" ; include_sample_data <- T ; sample_col_keep <- c('IS_CONTROL', 'Buoyant_density', "Replicate") ; include_tax_table <- FALSE ; tax_col_keep <- NULL ;
+
   # OTU table
   df_OTU = phyloseq::otu_table(physeq)
   df_OTU = suppressWarnings(as.data.frame(as.matrix(df_OTU)))
@@ -95,6 +93,7 @@ phyloseq2table = function(physeq,
     df_meta = phyloseq2df(physeq, phyloseq::sample_data)
     df_meta$SAMPLE_JOIN = rownames(df_meta)
 
+    ##### this if can be REMOVED after removing the use of the expression
     if(! is.null(control_expr)){
       # setting control
       df_meta = df_meta %>%
@@ -104,6 +103,7 @@ phyloseq2table = function(physeq,
         stop('control_expr is not valid; no samples selected as controls')
       }
     }
+    ##### up to here
 
     ## trimming
     if(!is.null(sample_col_keep)){
